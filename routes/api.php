@@ -22,6 +22,7 @@ use Database\Seeders\UserSeeder;
 //User
 Route::post('/login',[UserController::class,'login']);
 Route::post('userRegister',[UserController::class,'userRegister']);
+Route::post('motelRegister',[UserController::class,'motelRegister']);
 Route::get('/ooo',function () {
     return response('sldkfjs',200);
 });

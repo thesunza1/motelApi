@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Role;
 use DateTime;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Support\Facades\Hash;
+
 
 class UserController extends Controller
 {
@@ -66,5 +68,15 @@ class UserController extends Controller
     ]);
    }
 
+   //register new motel user role
+   public function motelRegister(Request $request){
+    $data = json_decode( $request->motel);
+    $images = json_decode($request->motel_img);
+
+    return response()->json([
+        'motel' => $data,
+        'gg' => $images
+    ]);
+   }
 
 }
