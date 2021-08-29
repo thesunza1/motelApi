@@ -47,4 +47,26 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    //motel  one to one
+    public function motel() {
+        return $this->hasOne(Motel::class);
+    }
+    //role one to many invert
+    public function role() {
+        return $this->belongsTo(Roles::class);
+    }
+
+    //post one to many
+    public function posts() {
+        return $this->hasMany(Post::class);
+    }
+    //post noti sender and receiver
+    public function noti_senders() {
+        return $this->hasMany(Noti::class,'sender_id');
+    }
+    public function noti_receivers() {
+        return $this->hasMany(Noti::class,'receiver_id');
+    }
+
 }
