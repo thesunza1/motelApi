@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Room extends Model
 {
     use HasFactory;
+    protected $guarded =  [] ;
 
     public function posts() {
         return $this->hasMany(Post::class);
@@ -30,8 +31,5 @@ class Room extends Model
         return $this->belongsTo(RoomType::class);
     }
 
-    public function motel() {
 
-        return $this->belongsTo(Motel::class);
-    }
 }

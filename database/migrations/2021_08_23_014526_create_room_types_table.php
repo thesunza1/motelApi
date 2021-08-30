@@ -23,7 +23,7 @@ class CreateRoomTypesTable extends Migration
             $table->integer('male');
             $table->integer('female');
             $table->integer('everyone');
-            $table->integer('content');
+            $table->string('content');
             $table->timestamps();
         });
     }

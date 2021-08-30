@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class MotelImg extends Model
 {
     use HasFactory;
+    protected $guarded = [] ;
 
     public function img_type() {
         return $this->belongsTo(ImgType::class);
