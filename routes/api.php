@@ -3,7 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MotelController;
 use Database\Seeders\UserSeeder;
+use App\Http\Controllers\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,16 +22,25 @@ use Database\Seeders\UserSeeder;
 // header('Access-Control-Allow-Headers:  Content-Type, X-Auth-Token, Origin, Authorization');
 
 //User
-Route::post('/login',[UserController::class,'login']);
-Route::post('userRegister',[UserController::class,'userRegister']);
-Route::post('motelRegister',[UserController::class,'motelRegister']);
-Route::get('/ooo',function () {
-    return response('sldkfjs',200);
+Route::post('/login', [UserController::class, 'login']);
+Route::post('userRegister', [UserController::class, 'userRegister']);
+Route::post('motelRegister', [UserController::class, 'motelRegister']);
+Route::get('/ooo', function () {
+    return response('sldkfjs', 200);
 });
+//Motel
+Route::middleware(['auth:sanctum'])->group(
+    function () {
+        Route::get('getMotelRoomType', [MotelController::class, 'getMotelRoomType']);
 
-// Route::match(['get', 'post'], '/login',[UserController::class,'login']);
+    }
+);
+// Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json([
         'user' => $request->user()
     ]);
 });
+
+//role
+Route::get('roles/{role}', [RoleController::class, 'index']);

@@ -46,7 +46,7 @@ class UserController extends Controller
     // register new user
     public function userRegister(Request $request)
     {
-        $email = $request->email . '.@gmail.com';
+        $email = $request->email . '@gmail.com';
         // $date = DateTime::createFromFormat('Y-m-d H:i:s' , $request->date . ' 00:00:00');
         $checkemail = $this->emailCheck($email);
         if ($checkemail == 1) {
@@ -87,7 +87,7 @@ class UserController extends Controller
         //check email
         $email =  $users->email . '.@gmail.com';
         if ($this->emailCheck($email) == 1) {
-            return response()->json(['statusCode' => 1]);
+            return response()->json(['statusCode' => 0]);
         }
 
         //create user
@@ -146,22 +146,28 @@ class UserController extends Controller
         for ($i = 0; $i < $a; $i++) {
             $room_typ = $motels->room_types()->create($this->dataRoomType($room_types[$i]));
             $room_num = $room_types[$i]->room_num ;
-            $this->createRooms($room_num,$room_typ);
+            $this->createRooms($room_num,$room_typ,$phong);
+            $phong+= $room_num;
             $fname = $filename.$i ;
             $num = $request->input($fname.'_num');
             $this->storeImgDetail1($fname,$num, $room_typ,$request);
-
+            if($motel->auto_post) {
+                $room_typ->posts()->create([
+                    'title' => $motel->names ,
+                    'room_id' => null ,
+                    'conpound_content' => '',
+                    'content' => '',
+                    'status' => 1 ,
+                    'post_type_id' => 1
+                ]);
+            }
         }
-        //create img_details
-
-        //create room
 
         //create posts
 
 
         return response()->json([
-            'mess' => 'oke ',
-            'motel_img_num' => $motel_img_num,
+            'statusCode' => 1 ,
         ]);
     }
 
@@ -243,8 +249,9 @@ class UserController extends Controller
             ]);
         }
     }
-    private function createRooms($room_num , $room_type) {
-        for($i = 1 ; $i<= $room_num ; $i++) {
+    private function createRooms($room_num , $room_type ,$start ) {
+        $i = $start ;
+        for($i ; $i<= $room_num+$start -1 ; $i++) {
             $room_type->rooms()->create([
                 'name' => "$i",
                 'room_status_id' => 1

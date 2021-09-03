@@ -19,6 +19,9 @@ class RoomType extends Model
         return $this->hasMany(ImgDetail::class);
     }
 
+    public function rooms() {
+        return $this->hasMany(Room::class);
+    }
     public function motel() {
         return $this->belongsTo(Motel::class);
     }

@@ -54,13 +54,9 @@ class User extends Authenticatable
     }
     //role one to many invert
     public function role() {
-        return $this->belongsTo(Roles::class);
+        return $this->belongsTo(Role::class);
     }
 
-    //post one to many
-    public function posts() {
-        return $this->hasMany(Post::class);
-    }
     //post noti sender and receiver
     public function noti_senders() {
         return $this->hasMany(Noti::class,'sender_id');

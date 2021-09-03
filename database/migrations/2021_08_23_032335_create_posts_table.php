@@ -17,11 +17,9 @@ class CreatePostsTable extends Migration
             $table->id();
             $table->string('title');
             $table->bigInteger('room_id',false,true)->nullable();
-            $table->bigInteger('user_id',false,true);
             $table->bigInteger('room_type_id',false,true)->nullable();
             $table->bigInteger('post_type_id',false,true);
             $table->foreign('room_id')->references('id')->on('rooms')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('room_type_id')->references('id')->on('room_types')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('post_type_id')->references('id')->on('post_types')->onDelete('cascade')->onUpdate('cascade');
             $table->string('conpound_content')->default('');
