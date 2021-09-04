@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MotelController;
+use App\Http\Controllers\RoomStatusController;
+use App\Http\Controllers\RoomController;
 use Database\Seeders\UserSeeder;
 use App\Http\Controllers\RoleController;
 
@@ -32,7 +34,13 @@ Route::get('/ooo', function () {
 Route::middleware(['auth:sanctum'])->group(
     function () {
         Route::get('getMotelRoomType', [MotelController::class, 'getMotelRoomType']);
-
+        Route::get('findUser/{id}', [UserController::class, 'findUser']);
+        //role
+        Route::get('roles/{role}', [RoleController::class, 'index']);
+        //roomStatuses
+        Route::get('roomStatuses', [RoomStatusController::class, 'roomStatuses']);
+        //roomController
+        Route::put('updateRoomStatus/{id}', [RoomController::class, 'updateRoomStatus']);
     }
 );
 // Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);
@@ -41,6 +49,3 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         'user' => $request->user()
     ]);
 });
-
-//role
-Route::get('roles/{role}', [RoleController::class, 'index']);

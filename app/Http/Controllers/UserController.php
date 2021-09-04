@@ -170,9 +170,16 @@ class UserController extends Controller
             'statusCode' => 1 ,
         ]);
     }
-
-
-
+    //find user
+    public function findUser($id) {
+        $user = User::find($id);
+        $statusCode= 1;
+        if(!$user) $statusCode=0;
+        return response()->json([
+            'user' => $user ,
+            'statusCode' =>$statusCode,
+        ]);
+    }
     //support function
     private function emailCheck($email)
     {
