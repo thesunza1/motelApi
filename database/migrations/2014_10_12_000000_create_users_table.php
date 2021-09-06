@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->bigInteger('role_id',false,true)->nullable();
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null')->onUpdate('cascade');
             $table->integer('sex');
+            $table->integer('have_room')->default(0);
             $table->timestamp('birth_date');
             $table->string('phone_number');
             $table->string('job');
