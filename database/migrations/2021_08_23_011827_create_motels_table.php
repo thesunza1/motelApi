@@ -16,7 +16,7 @@ class CreateMotelsTable extends Migration
         Schema::create('motels', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id',false,true)->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null')->onUpdate('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->string('name') ;
             $table->string('address') ;
             $table->string('phone_number') ;
@@ -24,14 +24,12 @@ class CreateMotelsTable extends Migration
             $table->string('open') ;
             $table->string('parking') ;
             $table->integer('camera') ;
-            $table->string('latitude')->default('0');
-            $table->string('longitude')->default('0');
+            $table->float('latitude')->default(0);
+            $table->float('longitude')->default(0);
             $table->bigInteger('deposit') ;//dat coc
             $table->bigInteger('elec_cost') ;
             $table->bigInteger('water_cost') ;
             $table->bigInteger('people_cost') ;
-            $table->integer('elec_more') ;
-            $table->integer('water_more') ;
             $table->string('content') ;
             $table->integer('auto_post');
             $table->timestamps();

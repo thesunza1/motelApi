@@ -6,8 +6,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MotelController;
 use App\Http\Controllers\RoomStatusController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\NotiController;
 use Database\Seeders\UserSeeder;
 use App\Http\Controllers\RoleController;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +43,11 @@ Route::middleware(['auth:sanctum'])->group(
         Route::get('roomStatuses', [RoomStatusController::class, 'roomStatuses']);
         //roomController
         Route::put('updateRoomStatus/{id}', [RoomController::class, 'updateRoomStatus']);
+        //notiController
+        Route::post('sendInvite', [NotiController::class, 'sendInvite']);
+        //noti coontroller
+        Route::get('getAllNoti', [NotiController::class, 'getAllNoti']);
+        Route::get('countNoti', [NotiController::class, 'countNoti']);
     }
 );
 // Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);

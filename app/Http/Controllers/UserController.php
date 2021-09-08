@@ -11,6 +11,7 @@ use Dflydev\DotAccessData\Data;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 
 class UserController extends Controller
@@ -89,95 +90,95 @@ class UserController extends Controller
         if ($this->emailCheck($email) == 1) {
             return response()->json(['statusCode' => 0]);
         }
+        DB::transaction(function () use($request ,$users, $motel, $motel_imgs , $motel_equip, $motel_equips, $room_types , $motel_img_num, $motel_equip_num, $motel_equips_num, $email) {
+            //create user
+            $user = User::create([
+                'name' => $users->names,
+                'email' => $email,
+                'password' => Hash::make($users->password),
+                'role_id' => 2,
+                'sex' => $users->sex,
+                'address' => $users->address,
+                'birth_date' => $users->date,
+                'job' => $users->job,
+                'phone_number' => $users->phone_number,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+            //create motel
+            $motels = $user->motel()->create([
+                'name' => $motel->names,
+                'phone_number' => $motel->phone_number,
+                'address' => $motel->address,
+                'latitude' => $motel->latitude,
+                'longitude' => $motel->longitude,
+                'closed' => $this->tohave($motel->closed),
+                'open' => $this->tohave($motel->open),
+                'camera' => $this->toInterger($motel->camera),
+                'parking' => $motel->parking,
+                'deposit' => $motel->deposit,
+                'elec_cost' => $this->tohave($motel->elec_cost),
+                'water_cost' => $this->tohave($motel->water_cost),
+                'people_cost' => $this->tohave($motel->people_cost),
+                'content' => $motel->content,
+                'auto_post' => $this->toInterger($motel->auto_post),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+            //create motel_imgs
+            $public_img = $motels->motel_imgs()->create($this->createMotelImgs($motel_imgs));
+            $motel_equip1 = $motels->motel_imgs()->create($this->createMotelImgs($motel_equip));
+            $motel_equip2 = $motels->motel_imgs()->create($this->createMotelImgs($motel_equips));
+            //create img_details
+            $pfname = 'motel_img';
+            $this->storeImgDetail($pfname, $motel_img_num, $public_img, $request);
+            $pfname = 'motel_equip';
+            $this->storeImgDetail($pfname, $motel_equip_num, $motel_equip1, $request);
+            $pfname = 'motel_equips';
+            $this->storeImgDetail($pfname, $motel_equips_num, $motel_equip2, $request);
 
-        //create user
-        $user = User::create([
-            'name' => $users->names,
-            'email' => $email,
-            'password' => Hash::make($users->password),
-            'role_id' => 2,
-            'sex' => $users->sex,
-            'address' => $users->address,
-            'birth_date' => $users->date,
-            'job' => $users->job,
-            'phone_number' => $users->phone_number,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        //create motel
-        $motels = $user->motel()->create([
-            'name' => $motel->names,
-            'phone_number' => $motel->phone_number,
-            'address' => $motel->address,
-            'latitude' => $motel->latitude,
-            'longitude' => $motel->longitude,
-            'closed' => $this->tohave($motel->closed),
-            'open' => $this->tohave($motel->open),
-            'camera' => $this->toInterger($motel->camera),
-            'parking' => $motel->parking,
-            'deposit' => $motel->deposit,
-            'elec_cost' => $this->tohave($motel->elec_cost),
-            'water_cost' => $this->tohave($motel->water_cost),
-            'people_cost' => $this->tohave($motel->people_cost),
-            'elec_more' => $this->tohave($motel->elec_more),
-            'water_more' => $this->tohave($motel->water_more),
-            'content' => $motel->content,
-            'auto_post' => $this->toInterger($motel->auto_post),
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-        //create motel_imgs
-        $public_img = $motels->motel_imgs()->create($this->createMotelImgs($motel_imgs));
-        $motel_equip1 = $motels->motel_imgs()->create($this->createMotelImgs($motel_equip));
-        $motel_equip2 = $motels->motel_imgs()->create($this->createMotelImgs($motel_equips));
-        //create img_details
-        $pfname = 'motel_img';
-        $this->storeImgDetail($pfname, $motel_img_num, $public_img, $request);
-        $pfname = 'motel_equip';
-        $this->storeImgDetail($pfname, $motel_equip_num, $motel_equip1, $request);
-        $pfname = 'motel_equips';
-        $this->storeImgDetail($pfname, $motel_equips_num, $motel_equip2, $request);
-
-        //--------------------------
-        //create room_types
-        $a = count($room_types);
-        $filename = 'room' ;
-        $phong = 1;
-        for ($i = 0; $i < $a; $i++) {
-            $room_typ = $motels->room_types()->create($this->dataRoomType($room_types[$i]));
-            $room_num = $room_types[$i]->room_num ;
-            $this->createRooms($room_num,$room_typ,$phong);
-            $phong+= $room_num;
-            $fname = $filename.$i ;
-            $num = $request->input($fname.'_num');
-            $this->storeImgDetail1($fname,$num, $room_typ,$request);
-            if($motel->auto_post) {
-                $room_typ->posts()->create([
-                    'title' => $motel->names ,
-                    'room_id' => null ,
-                    'conpound_content' => '',
-                    'content' => '',
-                    'status' => 1 ,
-                    'post_type_id' => 1
-                ]);
+            //--------------------------
+            //create room_types
+            $a = count($room_types);
+            $filename = 'room';
+            $phong = 1;
+            for ($i = 0; $i < $a; $i++) {
+                $room_typ = $motels->room_types()->create($this->dataRoomType($room_types[$i]));
+                $room_num = $room_types[$i]->room_num;
+                $this->createRooms($room_num, $room_typ, $phong);
+                $phong += $room_num;
+                $fname = $filename . $i;
+                $num = $request->input($fname . '_num');
+                $this->storeImgDetail1($fname, $num, $room_typ, $request);
+                if ($motel->auto_post) {
+                    $room_typ->posts()->create([
+                        'title' => $motel->names,
+                        'room_id' => null,
+                        'conpound_content' => '',
+                        'content' => '',
+                        'status' => 1,
+                        'post_type_id' => 1
+                    ]);
+                }
             }
-        }
+        });
 
         //create posts
 
 
         return response()->json([
-            'statusCode' => 1 ,
+            'statusCode' => 1,
         ]);
     }
     //find user
-    public function findUser($id) {
+    public function findUser($id)
+    {
         $user = User::find($id);
-        $statusCode= 1;
-        if(!$user) $statusCode=0;
+        $statusCode = 1;
+        if (!$user) $statusCode = 0;
         return response()->json([
-            'user' => $user ,
-            'statusCode' =>$statusCode,
+            'user' => $user,
+            'statusCode' => $statusCode,
         ]);
     }
     //support function
@@ -256,9 +257,10 @@ class UserController extends Controller
             ]);
         }
     }
-    private function createRooms($room_num , $room_type ,$start ) {
-        $i = $start ;
-        for($i ; $i<= $room_num+$start -1 ; $i++) {
+    private function createRooms($room_num, $room_type, $start)
+    {
+        $i = $start;
+        for ($i; $i <= $room_num + $start - 1; $i++) {
             $room_type->rooms()->create([
                 'name' => "$i",
                 'room_status_id' => 1

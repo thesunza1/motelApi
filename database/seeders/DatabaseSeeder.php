@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
             NotiTypeSeeder::class,
             PostTypeSeeder::class,
             RoomStatusSeeder::class,
-            EquipSeeder::class,
         ]);
     }
 }
