@@ -24,6 +24,7 @@ class NotiResource extends JsonResource
             'content' => $this->content ,
             'status' => $this->status,
             'room_id' => $this->room_id ,
+            'noti_type_id' =>$this->noti_type_id ,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at ,
         ];

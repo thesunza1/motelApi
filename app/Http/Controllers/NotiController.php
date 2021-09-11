@@ -9,6 +9,7 @@ use App\Http\Resources\NotiResource;
 use App\Models\Noti;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 
 class NotiController extends Controller
@@ -30,7 +31,7 @@ class NotiController extends Controller
             $title = 'mời vào trọ ' . $motelName;
             $noii = Noti::create([
                 'title' => $title,
-                'receiver_id' => $receiverId,
+                'receiver_id' =>$receiverId,
                 'content' => '',
                 'sender_id' => $request->user()->id,
                 'noti_type_id' => $noti_type_id,
@@ -64,5 +65,38 @@ class NotiController extends Controller
         return response()->json([
             'num' =>$num ,
         ]);
+    }
+
+    public function  sendNoti(Request $request) {
+        $senderId = $request->user()->id ;
+        $noti = $request->noti ;
+        $statusCode = 1;
+        try{
+        DB::transaction(function() use($senderId,$noti ) {
+          $send = Noti::insert([
+            'sender_id' => $senderId,
+            'receiver_id' =>(int)$noti['receiver_id'],
+            'title' => $noti['title'],
+            'content' => $noti['content'],
+            'noti_type_id' => $noti['noti_type_id'],
+            'created_at' => Carbon::now() ,
+            'updated_at' => Carbon::now() ,
+          ]) ;
+        });
+
+        }
+        catch(\ExcepTion $e) {
+            $statusCode = 0 ;
+        }
+        return response()->json([
+            'statusCode' =>$statusCode,
+            'noti' => $noti,
+        ]);
+    }
+    public function isSeen($notiId){
+        $noti = Noti::find($notiId);
+        $noti->status = 1 ;
+        $noti->save() ;
+        return response()->json(['statusCode' => 1 ]);
     }
 }

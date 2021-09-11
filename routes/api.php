@@ -7,6 +7,7 @@ use App\Http\Controllers\MotelController;
 use App\Http\Controllers\RoomStatusController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\NotiController;
+use App\Http\Controllers\NotiTypeController;
 use Database\Seeders\UserSeeder;
 use App\Http\Controllers\RoleController;
 use App\Models\User;
@@ -43,11 +44,16 @@ Route::middleware(['auth:sanctum'])->group(
         Route::get('roomStatuses', [RoomStatusController::class, 'roomStatuses']);
         //roomController
         Route::put('updateRoomStatus/{id}', [RoomController::class, 'updateRoomStatus']);
+        Route::post('intoRoom', [RoomController::class, 'intoRoom']);
         //notiController
         Route::post('sendInvite', [NotiController::class, 'sendInvite']);
         //noti coontroller
         Route::get('getAllNoti', [NotiController::class, 'getAllNoti']);
         Route::get('countNoti', [NotiController::class, 'countNoti']);
+        //notitype controller
+        Route::get('notiType',[NotiTypeController::class,'notiType']);
+        Route::post('sendNoti',[NotiController::class,'sendNoti']);
+        Route::get('isSeen/{notiId}',[NotiController::class,'isSeen']);
     }
 );
 // Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);
@@ -56,3 +62,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         'user' => $request->user()
     ]);
 });
+
+Route::get('getNotiRoom/{roomId}', [RoomController::class,'getNotiRoom']);
