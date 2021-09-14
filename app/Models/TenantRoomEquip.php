@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class TenantRoomEquip extends Model
 {
     use HasFactory;
+    protected $guarded = [];
+
+    public function tenant() {
+        return $this->belongsTo(Tenant::class);
+    }
 }

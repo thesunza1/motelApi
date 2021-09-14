@@ -15,4 +15,5 @@ class MotelController extends Controller
         $motel = Motel::find($motelId)->loadMissing(['room_types.rooms.room_status']);
         return (new MotelResource($motel));
     }
+
 }

@@ -8,8 +8,14 @@ use App\Http\Controllers\RoomStatusController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\NotiController;
 use App\Http\Controllers\NotiTypeController;
+use App\Http\Controllers\PostController;
 use Database\Seeders\UserSeeder;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RoomTypeController;
+use App\Http\Controllers\TenantController;
+use App\Http\Controllers\TenantRoomEquipController;
+use App\Http\Controllers\TenantUserController;
+use App\Models\TenantRoomEquip;
 use App\Models\User;
 
 /*
@@ -54,6 +60,27 @@ Route::middleware(['auth:sanctum'])->group(
         Route::get('notiType',[NotiTypeController::class,'notiType']);
         Route::post('sendNoti',[NotiController::class,'sendNoti']);
         Route::get('isSeen/{notiId}',[NotiController::class,'isSeen']);
+        //tenant Controller
+        Route::get('getTenant',[TenantController::class,'getTenant']);
+        Route::get('getNumRoom',[TenantController::class,'getNumRoom']);
+        Route::post('updateNumRoom',[TenantController::class,'UpdateNumRoom']);
+        //RoomType Controller
+        Route::get('getRoomTypeUser',[RoomTypeController::class,'getRoomTypeUser']);
+        //tenant room equip controller
+        Route::get('getTenantRoomEquips',[TenantRoomEquipController::class,'getTenantRoomEquips']);
+        Route::post('deleteTenantRoomEquip',[TenantRoomEquipController::class,'deleteTenantRoomEquip']);
+        Route::post('createTenantRoomEquips',[TenantRoomEquipController::class,'createTenantRoomEquips']);
+        //tenant user controller
+        Route::get('getTenantUsers/{tenantId}',[TenantUserController::class,'getTenantUsers']);
+        Route::get('getInfoShare',[TenantUserController::class,'getInfoShare']);
+        Route::get('changeInfoShare/{tenant_user_id}',[TenantUserController::class,'changeInfoShare']);
+
+        //postController
+        Route::get('getPostConpound',[PostController::class,'getPostConpound']);
+        Route::post('createPostUser',[PostController::class,'createPostUser']);
+        Route::post('changeStatusConpound',[PostController::class,'changeStatusConpound']);
+        Route::post('deleteConpound',[PostController::class,'deleteConpound']);
+
     }
 );
 // Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);
