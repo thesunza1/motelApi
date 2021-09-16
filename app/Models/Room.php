@@ -19,6 +19,10 @@ class Room extends Model
         return $this->hasMany(Tenant::class);
     }
 
+    public function latest_tenant() {
+        return $this->hasOne(Tenant::class)->latest();
+    }
+
     public function noti_rooms() {
         return $this->hasMany(Noti::class);
     }

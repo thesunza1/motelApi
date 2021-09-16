@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RoomTypeResource extends JsonResource
+class RoomTypeBillResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -27,8 +27,7 @@ class RoomTypeResource extends JsonResource
             'everyone' => $this->everyone,
             'content' => $this->content,
             // 'motel' => new MotelResource($motel),
-            'rooms' =>  RoomResource::collection($rooms),
-            'had_rooms' =>  RoomResource::collection($had_rooms),
-        ];
+            'rooms' =>  RoomBillResource::collection($rooms),
+            'had_rooms' =>  RoomBillResource::collection($had_rooms),];
     }
 }

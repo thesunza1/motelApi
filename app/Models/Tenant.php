@@ -14,7 +14,13 @@ class Tenant extends Model
         return $this->hasMany(TenantUser::class);
     }
     public function bills() {
+        return $this->hasMany(Bill::class)->orderByDesc('created_at');
+    }
+    public function num_bills() {
         return $this->hasMany(Bill::class);
+    }
+    public function no_bills() {
+        return $this->hasMany(Bill::class)->where('status', 0);
     }
     public function tenant_room_equips() {
         return $this->hasMany(TenantRoomEquip::class);

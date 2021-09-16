@@ -92,4 +92,5 @@ class RoomController extends Controller
             ]); //user have motel ,
         }
     }
+
 }

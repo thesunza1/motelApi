@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BillController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -64,6 +65,10 @@ Route::middleware(['auth:sanctum'])->group(
         Route::get('getTenant',[TenantController::class,'getTenant']);
         Route::get('getNumRoom',[TenantController::class,'getNumRoom']);
         Route::post('updateNumRoom',[TenantController::class,'UpdateNumRoom']);
+        Route::get('getTenantUser/{room_id}',[TenantController::class,'getTenantUser']);
+        Route::get('confirmEq/{tenant_id}',[TenantController::class,'confirmEq']);
+        Route::get('confirmNum/{tenant_id}',[TenantController::class,'confirmNum']);
+
         //RoomType Controller
         Route::get('getRoomTypeUser',[RoomTypeController::class,'getRoomTypeUser']);
         //tenant room equip controller
@@ -80,6 +85,8 @@ Route::middleware(['auth:sanctum'])->group(
         Route::post('createPostUser',[PostController::class,'createPostUser']);
         Route::post('changeStatusConpound',[PostController::class,'changeStatusConpound']);
         Route::post('deleteConpound',[PostController::class,'deleteConpound']);
+        //billController
+        Route::get('getBillAllRoom/',[BillController::class,'getBillAllRoom']);
 
     }
 );

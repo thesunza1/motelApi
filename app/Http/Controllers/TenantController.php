@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use App\Models\TenantUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Noti;
+use App\Models\Room;
 use Carbon\Carbon;
 
 class TenantController extends Controller
@@ -49,7 +51,7 @@ class TenantController extends Controller
         $receiver_id = $room->room_type->motel->user->id;
         $noti_type_id = 4;
         $tenant->num_status = 0;
-        $tenant->water_num = $request->water_num;// chua tesat
+        $tenant->water_num = $request->water_num; // chua tesat
         $tenant->elec_num = $request->elec_num;
         $tenant->save();
 
@@ -64,9 +66,40 @@ class TenantController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
         });
-        return response()->json(['statusCode'=> 1]);
+        return response()->json(['statusCode' => 1]);
     }
+    public function getTenantUser(Request $request)
+    {
+        $roomId = $request->room_id;
+        $tenant = Room::find($roomId)->tenants()->first();
+        $tenants = $tenant->loadMissing('tenant_users.user')->loadMissing('tenant_room_equips');
 
+        $tenantUser = new TenantResource($tenants);
+        return response()->json([
+            'statusCode' => 1,
+            'tenant' => $tenantUser,
+        ]);
+    }
+    public function confirmEq(Request $request)
+    {
+        $tenant = Tenant::find($request->tenant_id);
+        $tenant->eq_status = 1;
+        $tenant->save();
+
+        return response()->json([
+            'statusCode' => 1,
+        ]);
+    }
+    public function confirmNum(Request $request)
+    {
+        $tenant = Tenant::find($request->tenant_id);
+        $tenant->num_status = 1;
+        $tenant->save();
+
+        return response()->json([
+            'statusCode' => 1,
+        ]);
+    }
     //support function
     public function spGetTenant($userId)
     {
