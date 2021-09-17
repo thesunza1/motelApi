@@ -19,6 +19,9 @@ class Tenant extends Model
     public function num_bills() {
         return $this->hasMany(Bill::class);
     }
+    public function latest_bill() {
+        return $this->hasMany(Bill::class)->latest();
+    }
     public function no_bills() {
         return $this->hasMany(Bill::class)->where('status', 0);
     }
