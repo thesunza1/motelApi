@@ -69,11 +69,11 @@ class RoomController extends Controller
             });
             return response()->json([
                 'statusCode' => 1,
-            ]); //user have motel ,
+            ]); //oke  ,
         }
         else if($roomStatus ==2 ){
             DB::transaction(function () use ($room , $userId){
-                $tenant = $room->tenants()->where('status', 0)->first();
+                $tenant = $room->tenants()->where('status', 0)->first(); // loi ngay day
                 $tenantId = $tenant->id ;
                 TenantUser::insert([
                     'tenant_id' => $tenantId,
@@ -84,12 +84,12 @@ class RoomController extends Controller
             });
             return response()->json([
                 'statusCode' => 1,
-            ]); //user have motel ,
+            ]); //oke  ,
         }
         else {
             return response()->json([
                 'statusCode' => 2,
-            ]); //user have motel ,
+            ]); // room is disable  ,
         }
     }
 

@@ -20,7 +20,7 @@ class Tenant extends Model
         return $this->hasMany(Bill::class);
     }
     public function latest_bill() {
-        return $this->hasMany(Bill::class)->latest();
+        return $this->hasOne(Bill::class)->latest();
     }
     public function no_bills() {
         return $this->hasMany(Bill::class)->where('status', 0);

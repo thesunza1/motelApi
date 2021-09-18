@@ -86,7 +86,9 @@ Route::middleware(['auth:sanctum'])->group(
         Route::post('changeStatusConpound',[PostController::class,'changeStatusConpound']);
         Route::post('deleteConpound',[PostController::class,'deleteConpound']);
         //billController
-        Route::get('getBillAllRoom/',[BillController::class,'getBillAllRoom']);
+        Route::get('getBillAllRoom',[BillController::class,'getBillAllRoom']);
+        Route::post('createAllBill',[BillController::class,'createAllBill']);
+
 
     }
 );

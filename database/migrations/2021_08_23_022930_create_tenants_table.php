@@ -21,7 +21,7 @@ class CreateTenantsTable extends Migration
             $table->integer('water_num')->nullable();
             $table->integer('elec_num')->nullable();
             $table->integer('num_status')->default(0);
-            $table->integer('status')->default(0);
+            $table->integer('status')->default(0); // 0 con hoat dong . 1 het hoat dong.
             $table->timestamp('in_date')->useCurrent();
             $table->timestamp('out_date')->nullable();
             $table->timestamps();
