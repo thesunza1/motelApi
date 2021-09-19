@@ -17,7 +17,7 @@ class TenantBillResource extends JsonResource
         $tenant_users = $this->whenLoaded('tenant_users');
         $tenant_room_equip = $this->whenLoaded('tenant_room_equips');
         $bills = $this->whenLoaded('bills');
-        $num_bills = $this->whenLoaded('num_bills');
+        // $num_bills = $this->whenLoaded('num_bills');
         $no_bills = $this->whenLoaded('no_bills');
 
         return [
@@ -34,7 +34,8 @@ class TenantBillResource extends JsonResource
             'tenant_room_equips' => TenantRoomEquipResource::collection($tenant_room_equip),
             // 'tenant_room_equips' =>
             'bills' => BillResource::collection($bills),
-            'bill_num' =>count(BillResource::collection($num_bills)),
+            'bill_num' =>count(BillResource::collection($bills)),
+            // 'bill_num' =>count(BillResource::collection($num_bills)),
             'no_bills' =>count( BillResource::collection($no_bills)),
         ];
     }

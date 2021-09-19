@@ -88,6 +88,11 @@ Route::middleware(['auth:sanctum'])->group(
         //billController
         Route::get('getBillAllRoom',[BillController::class,'getBillAllRoom']);
         Route::post('createAllBill',[BillController::class,'createAllBill']);
+        Route::post('createSomeBill',[BillController::class,'createSomeBill']);
+        Route::post('updateBillNum',[BillController::class,'updateBillNum']);
+        Route::post('updateBillStatus',[BillController::class,'updateBillStatus']);
+        Route::get('sendNotiBill/{bill_id}',[BillController::class,'sendNotiBill']);
+        Route::get('sendAllNotiBill/{motel_id}',[BillController::class,'sendAllNotiBill']);
 
 
     }

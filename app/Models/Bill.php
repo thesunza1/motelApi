@@ -9,4 +9,8 @@ class Bill extends Model
 {
     use HasFactory;
     protected $guarded =  [] ;
+
+    public function tenant(){
+        return $this->belongsTo(Tenant::class);
+    }
 }

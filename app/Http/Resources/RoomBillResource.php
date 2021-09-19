@@ -14,12 +14,12 @@ class RoomBillResource extends JsonResource
      */
     public function toArray($request)
     {
-        $room_statuses = $this->whenLoaded('room_status');
+        // $room_statuses = $this->whenLoaded('room_status');
         $latest_tenant = $this->whenLoaded('latest_tenant');
         return [
             'id' => $this->id ,
             'name' =>$this->name ,
-            'room_status' => new RoomStatusResource($room_statuses),
+            // 'room_status' => new RoomStatusResource($room_statuses),
             'tenant'=> new TenantBillResource($latest_tenant),
         ];
     }
