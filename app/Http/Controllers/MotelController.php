@@ -16,4 +16,9 @@ class MotelController extends Controller
         return (new MotelResource($motel));
     }
 
+    public static function getMotel($userId) {
+        $user = User::find($userId);
+        $motel = $user->motel;
+        return $motel;
+    }
 }

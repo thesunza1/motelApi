@@ -99,4 +99,20 @@ class NotiController extends Controller
         $noti->save() ;
         return response()->json(['statusCode' => 1 ]);
     }
+    public static function sendNotiChoose($title,$senderId , $receiverId,$content,$notiTypeId,$room_id ,$status){
+        if($notiTypeId !=3 ) {
+            $roomId = null;
+        }
+        Noti::insert([
+            'title' => $title,
+            'sender_id' => $senderId,
+            'receiver_id' => $receiverId,
+            'content' => $content,
+            'room_id' => $roomId,
+            'noti_type_id' => $notiTypeId,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        return true ;
+    }
 }

@@ -35,7 +35,7 @@ class TenantUserController extends Controller
     public function changeInfoShare(Request $request)
     {
         $tenantUser = TenantUser::find($request->tenant_user_id);
-        $tenantUser->infor_share = -$tenantUser->infor_share;
+        $tenantUser->infor_share =  $tenantUser->infor_share==0 ? 1:0;
         $tenantUser->save();
         return response()->json([
             'statusCode' => 1,

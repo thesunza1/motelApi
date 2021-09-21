@@ -17,6 +17,7 @@ class RoomTypeResource extends JsonResource
         // $motel = $this->whenLoaded(relationship: 'motel');
         $rooms = $this->whenLoaded(relationship: 'rooms');
         $had_rooms = $this->whenLoaded(relationship: 'had_rooms');
+        $img_details = $this->whenLoaded(relationship: 'img_details');
         return [
             'id' => $this->id ,
             'name' => $this->name,
@@ -29,6 +30,7 @@ class RoomTypeResource extends JsonResource
             // 'motel' => new MotelResource($motel),
             'rooms' =>  RoomResource::collection($rooms),
             'had_rooms' =>  RoomResource::collection($had_rooms),
+            'img_details' => ImgDetailResource::collection($img_details),
         ];
     }
 }

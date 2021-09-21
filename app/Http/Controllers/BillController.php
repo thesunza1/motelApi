@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BillResource;
 use App\Http\Resources\RoomTypeBillResource;
 use App\Models\Bill;
 use App\Models\Motel;
 use App\Models\Noti;
+use App\Models\Room;
 use App\Models\Tenant;
 use App\Models\User;
 use Carbon\Carbon;
@@ -249,5 +251,53 @@ class BillController extends Controller
         return response()->json([
             'statusCode' => 1,
         ]);
+    }
+    public function getBillOwnRoom(Request $request)  {
+        $userId = $request->user()->id ;
+        $user = User::find($userId);
+        $tenantUser = $user->latest_tenant_user;
+        $bills = $tenantUser->tenant->bills;
+        $billsArr = BillResource::collection($bills);
+        return response()->json([
+            'bills' => $billsArr ,
+            'statusCode'  => 1 ,
+        ]);
+    }
+    public function sendBillYes(Request $request) {
+        $userId = $request->user()->id ;
+        $content= $request->content ;
+        $room = Room::find($request->room_id);
+        $bill = $request->bill;
+        $title = "phòng $room->name bill " .$bill['date_begin'] . '-'.$bill['date_end'];
+        $user = User::find($userId) ;
+        $receiver = $user->latest_tenant_user->tenant->room->room_type->motel->user ;
+        $receiver_id = $receiver->id ;
+
+        NotiController::sendNotiChoose($title,$userId,$receiver_id,$content,4,null,0);
+
+
+        return response()->json([
+            'statusCode' => 1 ,
+            'receiver_id' => $title,
+        ]);
+    }
+    public function sendBillError(Request $request) {
+        $userId = $request->user()->id ;
+        $content= $request->content ;
+        $room = Room::find($request->room_id);
+        $bill = $request->bill;
+        $title = "phòng $room->name bill " .$bill['date_begin'] . '-'.$bill['date_end'];
+        $user = User::find($userId) ;
+        $receiver = $user->latest_tenant_user->tenant->room->room_type->motel->user ;
+        $receiver_id = $receiver->id ;
+
+        NotiController::sendNotiChoose($title,$userId,$receiver_id,$content,4,null,0);
+
+
+        return response()->json([
+            'statusCode' => 1 ,
+            'receiver_id' => $title,
+        ]);
+
     }
 }

@@ -64,5 +64,8 @@ class User extends Authenticatable
     public function noti_receivers() {
         return $this->hasMany(Noti::class,'receiver_id');
     }
+    public function latest_tenant_user() {
+        return $this->hasOne(TenantUser::class)->latest() ;
+    }
 
 }
