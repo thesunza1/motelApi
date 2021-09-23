@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\RoomStatus;
 use App\Models\RoomType;
 use App\Models\TenantUser;
+use App\Models\User;
 use Carbon\Carbon;
 
 class RoomController extends Controller
@@ -55,6 +56,7 @@ class RoomController extends Controller
         }
         if ($roomStatus == 1) {
             DB::transaction(function () use ($room, $userId) {
+                $user = User::find($userId);
                 $tenant = $room->tenants()->create([
                     'created_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
@@ -64,33 +66,66 @@ class RoomController extends Controller
                     'created_at' => Carbon::now(),
                     'created_at' => Carbon::now(),
                 ]);
-                $room->room_status_id = 2 ;
-                $room->save() ;
+                $room->room_status_id = 2;
+                $room->save();
+                $user->have_room = 1;
+                $user->save();
             });
             return response()->json([
                 'statusCode' => 1,
             ]); //oke  ,
-        }
-        else if($roomStatus ==2 ){
-            DB::transaction(function () use ($room , $userId){
+        } else if ($roomStatus == 2) {
+            DB::transaction(function () use ($room, $userId) {
                 $tenant = $room->tenants()->where('status', 0)->first(); // loi ngay day
-                $tenantId = $tenant->id ;
+                $tenantId = $tenant->id;
                 TenantUser::insert([
                     'tenant_id' => $tenantId,
-                    'user_id' => $userId ,
+                    'user_id' => $userId,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
+                $user = User::find($userId);
+                $user->have_room  = 1;
+                $user->save();
             });
             return response()->json([
                 'statusCode' => 1,
             ]); //oke  ,
-        }
-        else {
+        } else {
             return response()->json([
                 'statusCode' => 2,
             ]); // room is disable  ,
         }
     }
-
+    public function outRoom(Request $request)
+    {
+        $user = User::find($request->user()->id);
+        $tenant = $user->latest_tenant_user->tenant;
+        $tenantUsers = $tenant->tenant_users;
+        $bills = $tenant->bills;
+        $room = $tenant->room;
+        foreach ($bills as $bill) {
+            if ($bill->status == 0) {
+                return response()->json([
+                    'statusCode' => 0,
+                ]);
+            }
+        }
+        DB::transaction(function () use ($user, $tenant, $room, $tenantUsers) {
+            $numTenantUsers = count($tenantUsers);
+            if ($numTenantUsers == 1) {
+                $tenant->status = 1;
+                $tenant->save();
+                $room->room_status_id = 1;
+                $room->save();
+            } else if ($numTenantUsers > 1) {
+                $user->latest_tenant_user()->delete() ;
+            }
+            $user->have_room = 0;
+            $user->save();
+        });
+        return response()->json([
+            'statusCode' => 1
+        ]);
+    }
 }

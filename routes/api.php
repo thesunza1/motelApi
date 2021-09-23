@@ -46,7 +46,9 @@ Route::get('/ooo', function () {
 //Motel
 Route::middleware(['auth:sanctum'])->group(
     function () {
+        //motel controller
         Route::get('getMotelRoomType', [MotelController::class, 'getMotelRoomType']);
+        Route::get('getInfoShareMotel', [MotelController::class, 'getInfoShareMotel']);
         Route::get('findUser/{id}', [UserController::class, 'findUser']);
         //role
         Route::get('roles/{role}', [RoleController::class, 'index']);
@@ -55,6 +57,7 @@ Route::middleware(['auth:sanctum'])->group(
         //roomController
         Route::put('updateRoomStatus/{id}', [RoomController::class, 'updateRoomStatus']);
         Route::post('intoRoom', [RoomController::class, 'intoRoom']);
+        Route::post('outRoom', [RoomController::class, 'outRoom']);
         //notiController
         Route::post('sendInvite', [NotiController::class, 'sendInvite']);
         //noti coontroller

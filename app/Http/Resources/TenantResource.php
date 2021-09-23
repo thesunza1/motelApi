@@ -16,6 +16,7 @@ class TenantResource extends JsonResource
     public function toArray($request)
     {
         $tenant_users = $this->whenLoaded('tenant_users');
+        $infor_tenant_users = $this->whenLoaded('infor_tenant_users');
         $tenant_room_equip = $this->whenLoaded('tenant_room_equips');
         $bills = $this->whenLoaded('bills');
 
@@ -33,6 +34,7 @@ class TenantResource extends JsonResource
             'tenant_room_equips' => TenantRoomEquipResource::collection($tenant_room_equip),
             // 'tenant_room_equips' =>
             'bills' => BillResource::collection($bills),
+            'infor_tenant_users' => TenantUserResource::collection($infor_tenant_users),
         ];
     }
 }

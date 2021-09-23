@@ -13,6 +13,9 @@ class Tenant extends Model
     public function tenant_users() {
         return $this->hasMany(TenantUser::class);
     }
+    public function infor_tenant_users(){
+        return $this->hasMany(TenantUser::class)->where('infor_share' , 1);
+    }
     public function bills() {
         return $this->hasMany(Bill::class)->orderByDesc('created_at');
     }
