@@ -181,6 +181,50 @@ class UserController extends Controller
             'statusCode' => $statusCode,
         ]);
     }
+    public function getUser(Request $request) {
+        $user = User::find($request->user()->id) ;
+        return response()->json([
+            'statusCode' => 1 ,
+            'user' => $user,
+        ]);
+    }
+    public function logoutAllDevice(Request $request) {
+        $request->user()->tokens()->delete() ;
+        return response()->json([
+            'statusCode' => 1 ,
+        ]);
+    }
+
+    public function updateUP(Request $request) {
+
+        if (!Hash::check($request->password, $request->user()->password)) {
+            return response()->json([
+                // sai pass
+                'statusCode'=> 0 ,
+            ]);
+        }
+        $request->user()->update([
+            'username' => $request->username,
+            'password' =>Hash::make( $request->newpass),
+        ]);
+        return response()->json([
+            'statusCode' => 1 ,
+        ]);
+    }
+
+    public function updateAccount(Request $request){
+        $request->user()->update([
+            'name' => $request->name ,
+            'address' => $request->address,
+            'sex' => $request->sex ,
+            'phone_number' => $request->phone_number ,
+            'job' => $request->job ,
+            'birth_date' => $request->birth_date ,
+        ]);
+        return response()->json([
+            'statusCode' => 1 ,
+        ]);
+    }
     //support function
     private function emailCheck($email)
     {

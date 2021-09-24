@@ -55,4 +55,11 @@ class PostController extends Controller
             'statusCode' => 1,
         ]);
     }
+
+    public function getPost(Request $request) {
+        
+    }
+    public function getSearch(Request $request) {
+
+    }
 }

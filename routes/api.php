@@ -49,7 +49,12 @@ Route::middleware(['auth:sanctum'])->group(
         //motel controller
         Route::get('getMotelRoomType', [MotelController::class, 'getMotelRoomType']);
         Route::get('getInfoShareMotel', [MotelController::class, 'getInfoShareMotel']);
+        //user controller
         Route::get('findUser/{id}', [UserController::class, 'findUser']);
+        Route::post('logoutAllDevice' , [UserController::class, 'logoutAllDevice']);
+        Route::get('getUser' , [UserController::class, 'getUser']);  // -> user (response);
+        Route::post('updateUP' , [UserController::class, 'updateUP']);
+        Route::post('updateAccount' , [UserController::class, 'updateAccount']);
         //role
         Route::get('roles/{role}', [RoleController::class, 'index']);
         //roomStatuses
