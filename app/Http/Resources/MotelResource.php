@@ -15,6 +15,7 @@ class MotelResource extends JsonResource
     public function toArray($request)
     {
         $room_types =  $this->whenLoaded('room_types');
+        $motel_imgs =  $this->whenLoaded('motel_imgs');
 
         return [
             'id' => $this->id ,
@@ -36,6 +37,7 @@ class MotelResource extends JsonResource
             'auto_post' => $this->auto_post,
             'room_types' =>RoomTypeResource::collection($room_types),
             // 'room_types' => RoomTypeResource::collection($this->room_types),
+            'motel_imgs' => MotelImgResource::collection($motel_imgs),
         ];
     }
 }

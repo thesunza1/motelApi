@@ -51,10 +51,10 @@ Route::middleware(['auth:sanctum'])->group(
         Route::get('getInfoShareMotel', [MotelController::class, 'getInfoShareMotel']);
         //user controller
         Route::get('findUser/{id}', [UserController::class, 'findUser']);
-        Route::post('logoutAllDevice' , [UserController::class, 'logoutAllDevice']);
-        Route::get('getUser' , [UserController::class, 'getUser']);  // -> user (response);
-        Route::post('updateUP' , [UserController::class, 'updateUP']);
-        Route::post('updateAccount' , [UserController::class, 'updateAccount']);
+        Route::post('logoutAllDevice', [UserController::class, 'logoutAllDevice']);
+        Route::get('getUser', [UserController::class, 'getUser']);  // -> user (response);
+        Route::post('updateUP', [UserController::class, 'updateUP']);
+        Route::post('updateAccount', [UserController::class, 'updateAccount']);
         //role
         Route::get('roles/{role}', [RoleController::class, 'index']);
         //roomStatuses
@@ -123,3 +123,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('getNotiRoom/{roomId}', [RoomController::class, 'getNotiRoom']);
 
 Route::get('image/{filename}', [ImgDetailController::class, 'image']);
+
+
+Route::get('getPost', [PostController::class, 'getPost']);
+Route::get('detailPost/{post_id}', [PostController::class, 'detailPost']);

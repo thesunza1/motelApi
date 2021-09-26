@@ -18,6 +18,9 @@ class RoomType extends Model
     public function img_details() {
         return $this->hasMany(ImgDetail::class);
     }
+    public function first_img_detail() {
+       return $this->hasMany(ImgDetail::class)->latest();
+    }
 
     public function rooms() {
         return $this->hasMany(Room::class);

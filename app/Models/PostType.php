@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class PostType extends Model
 {
     use HasFactory;
+
+    public function posts() {
+        return $this->hasMany(Post::class)->orderByDesc('updated_at');
+    }
 }

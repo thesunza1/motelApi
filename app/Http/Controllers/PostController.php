@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostResource;
 use App\Models\TenantUser;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Models\PostType;
 
 class PostController extends Controller
 {
@@ -56,10 +58,33 @@ class PostController extends Controller
         ]);
     }
 
-    public function getPost(Request $request) {
-        
+    public function getPost(Request $request)
+    {
+        $post_type = PostType::all();
+        $posts = Post::where('id', '>', 0)->orderByDesc('created_at');
+        $postsPaginator = $posts->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
+            ->with('room_type.motel.user')->with('room.room_type.motel.user')
+            ->with('room.latest_tenant.tenant_users.user')->paginate(9);
+        return response()->json([
+            'statusCode' => 1,
+            'posts' => $postsPaginator,
+            'post_type' => $post_type,
+        ]);
     }
-    public function getSearch(Request $request) {
+    public function getSearch(Request $request)
+    {
+    }
+    public function detailPost(Request $request)
+    {
+        $post_id = $request->post_id;
+        $post = Post::find($post_id)->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
+            ->with('room_type.motel.user')->with('room.room_type.motel.user')
+            ->with('room.latest_tenant.tenant_users.user');
 
+
+        return response()->json([
+            'statusCode' => 1,
+            'post' => $post,
+        ]);
     }
 }

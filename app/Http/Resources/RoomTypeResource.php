@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Motel;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class RoomTypeResource extends JsonResource
@@ -18,6 +19,8 @@ class RoomTypeResource extends JsonResource
         $rooms = $this->whenLoaded(relationship: 'rooms');
         $had_rooms = $this->whenLoaded(relationship: 'had_rooms');
         $img_details = $this->whenLoaded(relationship: 'img_details');
+        $motel = $this->whenLoaded(relationship: 'motel');
+
         return [
             'id' => $this->id ,
             'name' => $this->name,
@@ -31,6 +34,7 @@ class RoomTypeResource extends JsonResource
             'rooms' =>  RoomResource::collection($rooms),
             'had_rooms' =>  RoomResource::collection($had_rooms),
             'img_details' => ImgDetailResource::collection($img_details),
+            'motel' => new MotelResource($motel),
         ];
     }
 }

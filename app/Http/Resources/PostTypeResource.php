@@ -14,6 +14,12 @@ class PostTypeResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $posts = $this->whenLoaded('posts');
+        return [
+            'id' => $this->id ,
+            'name' => $this->name ,
+            'post' => PostResource::collection($posts->paginate(10)),
+
+        ];
     }
 }
