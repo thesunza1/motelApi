@@ -7,6 +7,7 @@ use App\Models\TenantUser;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\PostType;
+use App\Models\User;
 
 class PostController extends Controller
 {
@@ -77,14 +78,55 @@ class PostController extends Controller
     public function detailPost(Request $request)
     {
         $post_id = $request->post_id;
-        $post = Post::find($post_id)->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
-            ->with('room_type.motel.user')->with('room.room_type.motel.user')
-            ->with('room.latest_tenant.tenant_users.user');
-
-
+        $post = Post::find($post_id);
+        $postWith = $post->loadMissing('room_type.img_details')->loadMissing('room.room_type.img_details')
+            ->loadMissing('room_type.motel.user')->loadMissing('room.room_type.motel.user')
+            ->loadMissing('room.latest_tenant.tenant_users.user')->loadMissing('room_type.motel.motel_imgs.img_details')->loadMissing('room.room_type.motel.motel_imgs.img_details');
+        $postRes = new  PostResource($postWith);
+        $rooms = null;
+        if ($post->post_type_id == 1) {
+            $rooms = $post->room_type->none_rooms;
+        }
         return response()->json([
             'statusCode' => 1,
-            'post' => $post,
+            'post' => $postRes,
+            'post_id' => $post_id,
+            'rooms' => $rooms,
+        ]);
+    }
+    public function sendIntoNoti(Request $request)
+    {
+        $title = 'muốn vào phòng trọ';
+        $content = '';
+        $user = User::find($request->user()->id);
+        $content .= 'phòng muốn vào : ' . implode(", ", $request->ListRooms) . '<br>';
+        $content .= 'họ tên: ' . $user->name . '<br/>';
+        $content .= ' điện thoại: ' . $user->phone_number . '<br/>';
+        $content .= ' nghề: ' . $user->job . '<br/>';
+        $user = Post::find($request->postId)->room_type->motel->user;
+        $senderId = $request->user()->id;
+        $receiverId = $user->id;
+        NotiController::sendNotiChoose($title, $senderId, $receiverId, $content, 4, null, 0);
+        return response()->json([
+            'statusCode' => 1,
+        ]);
+    }
+    public function sendIntoNotiRoom(Request $request)
+    {
+        $title = 'muốn vào phòng trọ';
+        $content = '';
+        $user = User::find($request->user()->id);
+        $content .= 'họ tên: ' . $user->name . '<br/>';
+        $content .= ' điện thoại: ' . $user->phone_number . '<br/>';
+        $content .= ' nghề: ' . $user->job . '<br/>';
+        $users = Post::find($request->postId)->room->latest_tenant->tenant_users;
+        $senderId = $request->user()->id;
+        foreach ($users as $user) {
+            $receiverId = $user->user->id;
+            NotiController::sendNotiChoose($title, $senderId, $receiverId, $content, 4, null, 0);
+        }
+        return response()->json([
+            'statusCode' => 1,
         ]);
     }
 }

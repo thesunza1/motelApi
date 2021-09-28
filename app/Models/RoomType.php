@@ -28,6 +28,9 @@ class RoomType extends Model
     public function had_rooms() {
         return $this->hasMany(Room::class)->where('room_status_id' , 2 );
     }
+    public function none_rooms() {
+        return $this->hasMany(Room::class)->where('room_status_id' , 1 );
+    }
     public function motel() {
         return $this->belongsTo(Motel::class);
     }
