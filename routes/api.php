@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BillController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ImgDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -113,6 +114,9 @@ Route::middleware(['auth:sanctum'])->group(
         //motelImgController
         Route::get('getMotelImgs', [MotelImgController::class, 'getMotelImgs']);
         //imgDetailcontroller
+
+        //commentController
+        Route::post('createComment', [CommentController::class, 'createComment']);
     }
 );
 // Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);
@@ -123,9 +127,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('getNotiRoom/{roomId}', [RoomController::class, 'getNotiRoom']);
-
 Route::get('image/{filename}', [ImgDetailController::class, 'image']);
-
-
-Route::get('getPost', [PostController::class, 'getPost']);
 Route::get('detailPost/{post_id}', [PostController::class, 'detailPost']);
+
+Route::get('getAllComment/{post_id}', [CommentController::class, 'getAllComment']);
+
+//postController
+Route::get('getPost', [PostController::class, 'getPost']);
+Route::post('searchPost',[PostController::class,'searchPost']);

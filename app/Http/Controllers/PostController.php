@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PostResource;
+use App\Models\Motel;
 use App\Models\TenantUser;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\PostType;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -128,5 +130,82 @@ class PostController extends Controller
         return response()->json([
             'statusCode' => 1,
         ]);
+    }
+    public function searchPost(Request $request)
+    {
+        //motel
+        $search = $request->search;
+        $address = $request->address;
+        $post_type = $request->post_type;
+        //room_type
+        $sex = $request->sex;
+        $price_max = $request->price_max;
+        $price_min = $request->price_min;
+        $area_max = $request->area_max;
+        $area_min = $request->area_min;
+        // $test = DB::table('posts')->;
+        if ($post_type == 1) {
+            $room_types = DB::table('room_types')
+                ->whereBetween('cost', [$price_min, $price_max])
+                ->whereBetween('area', [$area_min, $area_max])
+                ->where('male', $this->toSex('male', $sex))
+                ->where('female', $this->toSex('female', $sex))
+                ->where('everyone', $this->toSex('everyone', $sex));
+            $roMotel =  $room_types->join('motels', function ($join) use ($address, $search) {
+                $join->on('room_types.motel_id', '=', 'motels.id')
+                    ->where('motels.address', 'like', $address . '%')
+                    ->whereOr('motels.name', 'like', $search . '%');
+            })
+                ->select('room_types.id as room_type_id')->get();
+
+            $roMotelArr = [];
+            foreach ($roMotel as $rType) {
+                array_push($roMotelArr, $rType->room_type_id);
+            }
+            $post = Post::whereIn('room_type_id', $roMotelArr);
+        } else {
+            $room_types = DB::table('room_types')
+                ->whereBetween('cost', [$price_min, $price_max])
+                ->whereBetween('area', [$area_min, $area_max])
+                ->where('male', $this->toSex('male', $sex))
+                ->where('female', $this->toSex('female', $sex))
+                ->where('everyone', $this->toSex('everyone', $sex));
+            $roMotel =  $room_types->join('motels', function ($join) use ($address, $search) {
+                $join->on('room_types.motel_id', '=', 'motels.id')
+                    ->where('motels.address', 'like', $address . '%')
+                    ->whereOr('motels.name', 'like',$search . '%');
+                })
+                ->join('rooms','rooms.room_type_id' ,'=','room_types.id')
+                ->select('rooms.id as id')->get();
+
+            $roMotelArr = [];
+            foreach ($roMotel as $rType) {
+                array_push($roMotelArr, $rType->id);
+            }
+            $post = Post::whereIn('room_id', $roMotelArr);
+        }
+        $postarr= $post->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
+            ->with('room_type.motel.user')->with('room.room_type.motel.user')
+            ->with('room.latest_tenant.tenant_users.user')->paginate(10);
+        return response()->json([
+            'statusCode' => 1,
+            // 'post' => $postarr,
+            'motel' =>$roMotel,
+            'search' => $search,
+            'address' => $address,
+        ]);
+    }
+
+    //sp function
+    public function toSex($sexIn, $sex)
+    {
+        $num = 0;
+        if ($sex == 3) return 1;
+        if (strcmp('male', $sexIn) == 0) {
+            $num = ($sex == 0 || $sex == 2) ? 1 : 0;
+        } else if (strcmp('female', $sexIn) == 0) {
+            $num = ($sex == 1 || $sex == 2) ? 1 : 0;
+        }
+        return $num;
     }
 }
