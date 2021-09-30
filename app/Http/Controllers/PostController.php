@@ -136,6 +136,8 @@ class PostController extends Controller
         //motel
         $search = $request->search;
         $address = $request->address;
+        $arrSearch = explode(' ', $search);
+        $arrAddress = explode(' ', $address);
         $post_type = $request->post_type;
         //room_type
         $sex = $request->sex;
@@ -151,10 +153,24 @@ class PostController extends Controller
                 ->where('male', $this->toSex('male', $sex))
                 ->where('female', $this->toSex('female', $sex))
                 ->where('everyone', $this->toSex('everyone', $sex));
-            $roMotel =  $room_types->join('motels', function ($join) use ($address, $search) {
+            $roMotel =  $room_types->join('motels', function ($join) use ($address, $search, $arrAddress, $arrSearch) {
                 $join->on('room_types.motel_id', '=', 'motels.id')
-                    ->where('motels.address', 'like', $address . '%')
-                    ->whereOr('motels.name', 'like', $search . '%');
+                    ->where('motels.address', 'like', '%' . $address . '%')
+                    ->orwhere('motels.name', 'like', '%' . $search . '%')
+                    ->orwhere(function ($query) use ($arrSearch) {
+                        if (count($arrSearch) > 1) {
+                            foreach ($arrSearch as $val) {
+                                $query->where('motels.name', 'like', '%' . $val . '%');
+                            }
+                        }
+                    })
+                    ->orwhere(function ($query) use ($arrAddress) {
+                        if (count($arrAddress) > 1) {
+                            foreach ($arrAddress as $val) {
+                                $query->orwhere('motels.address', 'like', '%' . $val . '%');
+                            }
+                        }
+                    });
             })
                 ->select('room_types.id as room_type_id')->get();
 
@@ -170,12 +186,26 @@ class PostController extends Controller
                 ->where('male', $this->toSex('male', $sex))
                 ->where('female', $this->toSex('female', $sex))
                 ->where('everyone', $this->toSex('everyone', $sex));
-            $roMotel =  $room_types->join('motels', function ($join) use ($address, $search) {
+            $roMotel =  $room_types->join('motels', function ($join) use ($address, $search, $arrSearch, $arrAddress) {
                 $join->on('room_types.motel_id', '=', 'motels.id')
-                    ->where('motels.address', 'like', $address . '%')
-                    ->whereOr('motels.name', 'like',$search . '%');
-                })
-                ->join('rooms','rooms.room_type_id' ,'=','room_types.id')
+                    ->where('motels.address', 'like', '%' . $address . '%')
+                    ->orwhere('motels.name', 'like', '%' . $search . '%')
+                    ->orwhere(function ($query) use ($arrSearch) {
+                        if (count($arrSearch) > 1) {
+                            foreach ($arrSearch as $val) {
+                                $query->where('motels.name', 'like', '%' . $val . '%');
+                            }
+                        }
+                    })
+                    ->orwhere(function ($query) use ($arrAddress) {
+                        if (count($arrAddress) > 1) {
+                            foreach ($arrAddress as $val) {
+                                $query->orwhere('motels.address', 'like', '%' . $val . '%');
+                            }
+                        }
+                    });
+            })
+                ->join('rooms', 'rooms.room_type_id', '=', 'room_types.id')
                 ->select('rooms.id as id')->get();
 
             $roMotelArr = [];
@@ -184,15 +214,14 @@ class PostController extends Controller
             }
             $post = Post::whereIn('room_id', $roMotelArr);
         }
-        $postarr= $post->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
+        $postarr = $post->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
             ->with('room_type.motel.user')->with('room.room_type.motel.user')
             ->with('room.latest_tenant.tenant_users.user')->paginate(10);
         return response()->json([
             'statusCode' => 1,
-            // 'post' => $postarr,
-            'motel' =>$roMotel,
-            'search' => $search,
-            'address' => $address,
+            'post' => $postarr,
+            'search' => $arrSearch,
+            'address' => $arrAddress,
         ]);
     }
 

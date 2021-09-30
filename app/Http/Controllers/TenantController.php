@@ -16,8 +16,9 @@ class TenantController extends Controller
     //
     public function getTenant(Request $request)
     {
-        $userId = $request->user()->id;
-        $tenant_user = TenantUser::where('user_id', $userId)->first();
+        // $userId = $request->user()->id;
+        // $tenant_user = TenantUser::where('user_id', $userId)->latest()->first();
+        $tenant_user = $request->user()->latest_tenant_user;
         $tenantId = $tenant_user->tenant_id;
         $tenant = Tenant::find($tenantId);
         $tenant->tenant_users;
@@ -27,12 +28,14 @@ class TenantController extends Controller
             // 'tenant_user' =>$tenant_user,
             'tenant' => $tenant,
             'statusCode' => 1,
+            'tenantid' => $tenantId ,
         ]);
     }
     public function getNumRoom(Request $request)
     {
-        $userId = $request->user()->id;
-        $tenant_user = TenantUser::where('user_id', $userId)->first();
+        // $userId = $request->user()->id;
+        // $tenant_user = TenantUser::where('user_id', $userId)->first();
+        $tenant_user = $request->user()->latest_tenant_user;
         $tenant = $tenant_user->tenant;
         return response()->json([
             'elec_num' => $tenant->elec_num,
@@ -43,7 +46,8 @@ class TenantController extends Controller
     public function updateNumRoom(Request $request)
     {
         $userId = $request->user()->id;
-        $tenant = $this->spGetTenant($userId);
+        // $tenant = $this->spGetTenant($userId);
+        $tenant = $request->user()->latest_tenant_user->tenant;
         $room = $tenant->room;
         $title = 'xác nhận phòng ' . $room->name;
         $content = 'xác nhận số điện , nước ';
@@ -71,7 +75,8 @@ class TenantController extends Controller
     public function getTenantUser(Request $request)
     {
         $roomId = $request->room_id;
-        $tenant = Room::find($roomId)->tenants()->first();
+        // $tenant = Room::find($roomId)->tenants()->first();
+        $tenant = Room::find($roomId)->latest_tenant;
         $tenants = $tenant->loadMissing('tenant_users.user')->loadMissing('tenant_room_equips');
 
         $tenantUser = new TenantResource($tenants);
