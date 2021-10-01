@@ -147,31 +147,49 @@ class PostController extends Controller
         $area_min = $request->area_min;
         // $test = DB::table('posts')->;
         if ($post_type == 1) {
-            $room_types = DB::table('room_types')
-                ->whereBetween('cost', [$price_min, $price_max])
-                ->whereBetween('area', [$area_min, $area_max])
-                ->where('male', $this->toSex('male', $sex))
-                ->where('female', $this->toSex('female', $sex))
-                ->where('everyone', $this->toSex('everyone', $sex));
-            $roMotel =  $room_types->join('motels', function ($join) use ($address, $search, $arrAddress, $arrSearch) {
-                $join->on('room_types.motel_id', '=', 'motels.id')
+            $room_types = DB::table('room_types');
+                // ->whereBetween('cost', [$price_min, $price_max])
+                // ->whereBetween('area', [$area_min, $area_max])
+                // ->where('male', $this->toSex('male', $sex))
+                // ->where('female', $this->toSex('female', $sex))
+                // ->where('everyone', $this->toSex('everyone', $sex));
+            // $roMotel =  $room_types->join('motels', function ($join) use ($address, $search, $arrAddress, $arrSearch) {
+            //     $join->on('room_types.motel_id', '=', 'motels.id')
+            //         ->where('motels.address', 'like', '%' . $address . '%')
+            //         ->where('motels.name', 'like', '%' . $search . '%')
+            //         ->orwhere(function ($query) use ($arrSearch) {
+            //             if (count($arrSearch) > 1) {
+            //                 foreach ($arrSearch as $val) {
+            //                     $query->orwhere('motels.name', 'like', '%'.$val.'%');
+            //                 }
+            //             }
+            //         })
+            //         ->orwhere(function ($query) use ($arrAddress) {
+            //             if (count($arrAddress) > 1) {
+            //                 foreach ($arrAddress as $val) {
+            //                     $query->orwhere('motels.addresss', 'like', '%'.$val.'%');
+            //                 }
+            //             }
+            //         });
+            // })
+            //     ->select('room_types.id as room_type_id')->get();
+            $roMotel = $room_types->join('motels', 'room_types.motel_id', '=' , 'motels.id')
                     ->where('motels.address', 'like', '%' . $address . '%')
-                    ->orwhere('motels.name', 'like', '%' . $search . '%')
+                    ->where('motels.name', 'like', '%' . $search . '%')
                     ->orwhere(function ($query) use ($arrSearch) {
                         if (count($arrSearch) > 1) {
                             foreach ($arrSearch as $val) {
-                                $query->where('motels.name', 'like', '%' . $val . '%');
+                                $query->orwhere('motels.name', 'like', '%'.$val.'%');
                             }
                         }
                     })
                     ->orwhere(function ($query) use ($arrAddress) {
                         if (count($arrAddress) > 1) {
                             foreach ($arrAddress as $val) {
-                                $query->orwhere('motels.address', 'like', '%' . $val . '%');
+                                $query->orwhere('motels.address', 'like', '%'.$val.'%');
                             }
                         }
-                    });
-            })
+                    })
                 ->select('room_types.id as room_type_id')->get();
 
             $roMotelArr = [];
@@ -220,6 +238,7 @@ class PostController extends Controller
         return response()->json([
             'statusCode' => 1,
             'post' => $postarr,
+            'motel' => $roMotel,
             'search' => $arrSearch,
             'address' => $arrAddress,
         ]);

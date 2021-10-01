@@ -54,6 +54,16 @@ class NotiController extends Controller
 
         return response()->json(['notis' => $notiArr]);
     }
+    public function getAllOutbox(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $noti = Noti::where('sender_id', $userId)->orderBy('created_at', 'desc')->get();
+
+        $notiArr =   NotiResource::collection($noti->loadMissing('receiverUser'));
+
+        return response()->json(['notis' => $notiArr]);
+    }
     public function countNoti(Request $request) {
         $userId = $request->user()->id;
 

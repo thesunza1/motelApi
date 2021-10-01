@@ -86,7 +86,7 @@ class UserController extends Controller
         $motel_equip_num = $request->motel_equip_num;
         $motel_equips_num = $request->motel_equips_num;
         //check email
-        $email =  $users->email . '.@gmail.com';
+        $email =  $users->email . '@gmail.com';
         if ($this->emailCheck($email) == 1) {
             return response()->json(['statusCode' => 0]);
         }
