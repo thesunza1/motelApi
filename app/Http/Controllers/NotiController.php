@@ -73,6 +73,7 @@ class NotiController extends Controller
             $num = count($noti);
         }
         return response()->json([
+            'statusCode' => 1,
             'num' =>$num ,
         ]);
     }
