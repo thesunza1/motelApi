@@ -51,6 +51,8 @@ Route::middleware(['auth:sanctum'])->group(
     //motel controller
     Route::get('getMotelRoomType', [MotelController::class, 'getMotelRoomType']);
     Route::get('getInfoShareMotel', [MotelController::class, 'getInfoShareMotel']);
+    Route::post('updateMotelInfor' , [MotelController::class, 'updateMotelInfor']);
+    Route::post('updateMotelImg' , [MotelController::class, 'updateMotelImg']);
     //user controller
     Route::get('findUser/{id}', [UserController::class, 'findUser']);
     Route::post('logoutAllDevice', [UserController::class, 'logoutAllDevice']);
@@ -86,6 +88,9 @@ Route::middleware(['auth:sanctum'])->group(
     //RoomType Controller
     Route::get('getRoomTypeUser', [RoomTypeController::class, 'getRoomTypeUser']);
     Route::get('getRoomTypeImgs', [RoomTypeController::class, 'getRoomTypeImgs']);
+    Route::post('addNumRoom', [RoomTypeController::class, 'addNumRoom']);
+    Route::post('updateRoomTypeContent', [RoomTypeController::class, 'updateRoomTypeContent']);
+    Route::post('createRoomType', [RoomTypeController::class, 'createRoomType']);
     //tenant room equip controller
     Route::get('getTenantRoomEquips', [TenantRoomEquipController::class, 'getTenantRoomEquips']);
     Route::post('deleteTenantRoomEquip', [TenantRoomEquipController::class, 'deleteTenantRoomEquip']);
@@ -122,6 +127,7 @@ Route::middleware(['auth:sanctum'])->group(
     //uploadController
     // Route::put('uploadImg/{count}', [UploadController::class, 'uploadImg']);
     Route::post('uploadImg', [UploadController::class, 'uploadImg']);
+    Route::post('uploadRoomImg', [UploadController::class, 'uploadRoomImg']);
   }
 );
 // Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);

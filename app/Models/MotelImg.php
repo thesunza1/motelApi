@@ -16,4 +16,7 @@ class MotelImg extends Model
     public function  img_details() {
         return $this->hasMany(ImgDetail::class);
     }
+    public function motel(){
+        return $this->belongsTo(Motel::class);
+    }
 }

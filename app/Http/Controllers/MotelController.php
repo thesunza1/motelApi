@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Motel;
 use App\Http\Resources\MotelResource;
 use App\Http\Resources\RoomTypeResource;
+use App\Models\MotelImg;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -35,6 +36,43 @@ class MotelController extends Controller
         $user = User::find($userId);
         $motel = $user->motel;
         return $motel;
+    }
+    public function updateMotelInfor(Request $request) {
+        $motel = $request->user()->motel;
+        $motel->update([
+            'name' => $request->names ,
+            'address' => $request->address ,
+            'camera' => $request->camera ,
+            'phone_number' => $request->phone_number ,
+            'latitude' => $request->lat ,
+            'longitude' => $request->lng ,
+            'open' => $request->open ,
+            'closed' => $request->closed ,
+            'parking' => $request->parking ,
+        ]);
+        $motel->save() ;
+
+        return response()->json([
+            'statusCode' => 1 ,
+        ]);
+    }
+    public function updateMotelImg(Request $request) {
+        $motelImg = MotelImg::find($request->detailImgId);
+        if($motelImg->img_type_id ==1 ){
+            $motel = $motelImg->motel;
+            $motel->update([
+                'content' => $request->motelContent,
+            ]);
+            $motel->save() ;
+        };
+        $motelImg->place = ($request->place) == null ? '' : $request->place;
+        $motelImg->save() ;
+
+        return response()->json([
+            'statusCode' => 1,
+            'content' => $request->content,
+            'place' => $request->place ,
+        ]);
     }
 
 }
