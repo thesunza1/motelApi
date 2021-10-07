@@ -225,6 +225,15 @@ class UserController extends Controller
             'statusCode' => 1 ,
         ]);
     }
+    //get all user
+    public function getAllUser(Request $request)  {
+        $users = User::paginate(10) ;
+        // $this->boolNumToString($users->data);
+        return response()->json([
+            'users' =>$users ,
+            'statusCode' => 1 ,
+        ]);
+    }
     //support function
     private function emailCheck($email)
     {
@@ -309,6 +318,13 @@ class UserController extends Controller
                 'name' => "$i",
                 'room_status_id' => 1
             ]);
+        }
+    }
+    private function boolNumToString(&$data){
+        $len = count($data) ;
+        for($i =0 ; $i<$len ; $i++) {
+            $data[$i]->have_room =( $data[$i]->have_room ==1 )? ' đã vào' : ' chưa vào';
+            $data[$i]->sex =( $data[$i]->sex ==1 )? ' nữ' : ' nam';
         }
     }
 }

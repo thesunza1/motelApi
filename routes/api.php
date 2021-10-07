@@ -146,3 +146,6 @@ Route::get('getAllComment/{post_id}', [CommentController::class, 'getAllComment'
 //postController
 Route::get('getPost', [PostController::class, 'getPost']);
 Route::post('searchPost', [PostController::class, 'searchPost']);
+
+//user controller
+Route::get('getAllUser',[UserController::class,'getAllUser']) ;
