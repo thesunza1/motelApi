@@ -175,7 +175,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $statusCode = 1;
-        if (!$user) $statusCode = 0;
+        if (!$user) $statusCode = 2;
         return response()->json([
             'user' => $user,
             'statusCode' => $statusCode,
@@ -234,6 +234,34 @@ class UserController extends Controller
             'statusCode' => 1 ,
         ]);
     }
+    //update user /id
+    public function updateUser(Request $request) {
+        $userId = $request->userId ;
+        $thisUser = User::find($userId);
+        $userUpdateData = [
+            'name' => $request->name ,
+            'phone_number' => $request->phone_number ,
+            'job' => $request->job,
+            'birth_date' => $request->birth_date ,
+            'password' => ($request->password != null)?  Hash::make($request->password) : $thisUser->password ,
+        ];
+        $thisUser->update($userUpdateData);
+        $thisUser->save() ;
+
+        return response()->json([
+            'statusCode' => 1 ,
+        ]);
+    }
+    //delete user  /id
+    public function deleteUser(Request $request) {
+        $thisUser = User::find($request->userId);
+        $thisUser->delete() ;
+
+        return response()->json([
+            'statusCode' => 1 ,
+        ]);
+    }
+
     //support function
     private function emailCheck($email)
     {

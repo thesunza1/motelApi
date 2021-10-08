@@ -59,6 +59,8 @@ Route::middleware(['auth:sanctum'])->group(
     Route::get('getUser', [UserController::class, 'getUser']);  // -> user (response);
     Route::post('updateUP', [UserController::class, 'updateUP']);
     Route::post('updateAccount', [UserController::class, 'updateAccount']);
+    Route::put('updateUser/{userId}', [UserController::class,'updateUser']);
+    Route::put('deleteUser/{userId}', [UserController::class,'deleteUser']);
     //role
     Route::get('roles/{role}', [RoleController::class, 'index']);
     //roomStatuses
