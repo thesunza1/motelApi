@@ -53,6 +53,7 @@ Route::middleware(['auth:sanctum'])->group(
     Route::get('getInfoShareMotel', [MotelController::class, 'getInfoShareMotel']);
     Route::post('updateMotelInfor' , [MotelController::class, 'updateMotelInfor']);
     Route::post('updateMotelImg' , [MotelController::class, 'updateMotelImg']);
+    Route::Post('findMotel', [MotelController::class, 'findMotel']);
     //user controller
     Route::get('findUser/{id}', [UserController::class, 'findUser']);
     Route::post('logoutAllDevice', [UserController::class, 'logoutAllDevice']);
@@ -151,3 +152,5 @@ Route::post('searchPost', [PostController::class, 'searchPost']);
 
 //user controller
 Route::get('getAllUser',[UserController::class,'getAllUser']) ;
+
+Route::get('getAllMotel',[MotelController::class,'getAllMotel']);
