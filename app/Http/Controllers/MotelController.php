@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MotelImgResource;
 use App\Models\Motel;
 use App\Http\Resources\MotelResource;
 use App\Http\Resources\RoomTypeResource;
 use App\Models\MotelImg;
 use App\Models\RoomType;
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MotelController extends Controller
 {
@@ -99,7 +102,7 @@ class MotelController extends Controller
         if (!$motelId) {
             $motel = User::find($userId)->motel;
             if ($motel != null) {
-                $motel->user ;
+                $motel->user;
                 return response()->json([
                     'statusCode' => 1,
                     'motel' => $motel,
@@ -111,8 +114,8 @@ class MotelController extends Controller
             }
         } else {
             $motel = Motel::find($motelId);
-            if ($motel != null ) {
-                $motel->user ;
+            if ($motel != null) {
+                $motel->user;
                 return response()->json([
                     'statusCode' => 1,
                     'motel' => $motel,
@@ -123,5 +126,56 @@ class MotelController extends Controller
                 ]);
             }
         }
+    }
+
+    public function adminGetMotel(Request $request)
+    {
+        $motel = Motel::find($request->motelId);
+        $motelRelation = $motel->loadMissing('user'); //get motel-user
+        $roomTypes = $motel->room_types;
+        $roomTypeRelation = $roomTypes->loadMissing('had_rooms.latest_tenant.tenant_users.user');
+        $roomTypeImgRelation = $roomTypes->loadMissing('img_details');
+        $motelImgs = $motel->motel_imgs;
+        $publicMotelImgRelation = $motelImgs->loadMissing('img_details');
+        // collection model ;
+        $arrMotel = new MotelResource($motelRelation);
+        $arrRoomTypes = RoomTypeResource::collection($roomTypeRelation);
+        $arrRoomTypeImgs = RoomTypeResource::collection($roomTypeImgRelation);
+        $arrPublicImgs =  MotelImgResource::collection($publicMotelImgRelation);
+
+        return response()->json([
+            'statusCode' => 1,
+            'motel' => $arrMotel,
+            'roomTypes' => $arrRoomTypes,
+            'roomTypeImgs' => $arrRoomTypeImgs,
+            'publicImgs' => $arrPublicImgs,
+        ]);
+    }
+
+    public function adminDeleteMotel(Request $request)
+    {
+        $motelId = $request->motelId;
+
+        //
+        $motel = Motel::find($motelId);
+        $roomTypes = $motel->room_types;
+
+        DB::transaction(function () use ($motel, $roomTypes) {
+            foreach ($roomTypes as $roomType) {
+                $rooms = $roomType->had_rooms;
+                foreach ($rooms as $room) {
+                    $tenantUsers = $room->latest_tenant->tenant_users;
+                    foreach ($tenantUsers as $tenantUser) {
+                        $user = $tenantUser->user;
+                        $user->have_room = 0;
+                        $user->save();
+                    }
+                }
+            }
+            $motel->user()->delete();
+        });
+        return response()->json([
+            'statusCode' => 1 ,
+        ]);
     }
 }

@@ -128,4 +128,26 @@ class RoomController extends Controller
             'statusCode' => 1
         ]);
     }
+    public function adminOutRoom(Request $request){
+        $user = User::find($request->userId);
+        $tenant = $user->latest_tenant_user->tenant;
+        $tenantUsers = $tenant->tenant_users;
+        $room = $tenant->room;
+        DB::transaction(function () use ($user, $tenant, $room, $tenantUsers) {
+            $numTenantUsers = count($tenantUsers);
+            if ($numTenantUsers == 1) {
+                $tenant->status = 1;
+                $tenant->save();
+                $room->room_status_id = 1;
+                $room->save();
+            } else if ($numTenantUsers > 1) {
+                $user->latest_tenant_user()->delete() ;
+            }
+            $user->have_room = 0;
+            $user->save();
+        });
+        return response()->json([
+            'statusCode' => 1
+        ]);
+    }
 }

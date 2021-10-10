@@ -54,6 +54,7 @@ Route::middleware(['auth:sanctum'])->group(
     Route::post('updateMotelInfor' , [MotelController::class, 'updateMotelInfor']);
     Route::post('updateMotelImg' , [MotelController::class, 'updateMotelImg']);
     Route::Post('findMotel', [MotelController::class, 'findMotel']);
+    Route::Post('deleteMotel', [MotelController::class, 'adminDeleteMotel']);
     //user controller
     Route::get('findUser/{id}', [UserController::class, 'findUser']);
     Route::post('logoutAllDevice', [UserController::class, 'logoutAllDevice']);
@@ -70,6 +71,7 @@ Route::middleware(['auth:sanctum'])->group(
     Route::put('updateRoomStatus/{id}', [RoomController::class, 'updateRoomStatus']);
     Route::post('intoRoom', [RoomController::class, 'intoRoom']);
     Route::post('outRoom', [RoomController::class, 'outRoom']);
+    Route::post('adminOutRoom', [RoomController::class, 'adminOutRoom']);
     //notiController
     Route::post('sendInvite', [NotiController::class, 'sendInvite']);
     //noti coontroller
@@ -152,5 +154,7 @@ Route::post('searchPost', [PostController::class, 'searchPost']);
 
 //user controller
 Route::get('getAllUser',[UserController::class,'getAllUser']) ;
-
+//motel controller
 Route::get('getAllMotel',[MotelController::class,'getAllMotel']);
+Route::get('adminGetMotel/{motelId}',[MotelController::class,'adminGetMotel']);
+
