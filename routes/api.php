@@ -97,6 +97,7 @@ Route::middleware(['auth:sanctum'])->group(
     Route::post('addNumRoom', [RoomTypeController::class, 'addNumRoom']);
     Route::post('updateRoomTypeContent', [RoomTypeController::class, 'updateRoomTypeContent']);
     Route::post('createRoomType', [RoomTypeController::class, 'createRoomType']);
+    Route::post('deleteRoomType',[RoomTypeController::class , 'deleteRoomType']);
     //tenant room equip controller
     Route::get('getTenantRoomEquips', [TenantRoomEquipController::class, 'getTenantRoomEquips']);
     Route::post('deleteTenantRoomEquip', [TenantRoomEquipController::class, 'deleteTenantRoomEquip']);

@@ -8,11 +8,14 @@ use App\Models\TenantUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\MotelController;
+use App\Http\Resources\RoomResource;
 use App\Http\Resources\RoomTypeResource;
+use App\Models\Room;
 use App\Models\RoomType;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Testing\Constraints\CountInDatabase;
 
 class RoomTypeController extends Controller
 {
@@ -122,5 +125,24 @@ class RoomTypeController extends Controller
         }
         //create room
         return response()->json(['statusCode' => 1 ]);
+    }
+
+    //delete roomtype for motel
+    public function deleteRoomType(Request $request) {
+        $roomType = RoomType::find($request->roomTypeId) ;
+        $had_room = $roomType->had_rooms;
+
+        $numHadRoom = count($had_room) ;
+        $statusCode = 1 ;
+        if($numHadRoom == 0 ){
+            $roomType->delete();
+        } else {
+            $statusCode = 0;
+        }
+
+        return response()->json([
+            'statusCode' => $statusCode ,
+            'count' => count($roomType->had_rooms),
+        ]);
     }
 }

@@ -41,6 +41,7 @@ class TenantController extends Controller
             'elec_num' => $tenant->elec_num,
             'water_num' => $tenant->water_num,
             'num_status' => $tenant->num_status,
+            'eq_status' => $tenant->eq_status, 
         ]);
     }
     public function updateNumRoom(Request $request)
