@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Room;
 use App\Http\Resources\NotiResource;
 use App\Models\Noti;
+use App\Models\Post;
+use App\Models\RoomType;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +33,7 @@ class NotiController extends Controller
             $title = 'mời vào trọ ' . $motelName;
             $noii = Noti::create([
                 'title' => $title,
-                'receiver_id' =>$receiverId,
+                'receiver_id' => $receiverId,
                 'content' => '',
                 'sender_id' => $request->user()->id,
                 'noti_type_id' => $noti_type_id,
@@ -64,54 +66,97 @@ class NotiController extends Controller
 
         return response()->json(['notis' => $notiArr]);
     }
-    public function countNoti(Request $request) {
+    public function countNoti(Request $request)
+    {
         $userId = $request->user()->id;
 
-        $noti = Noti::where('receiver_id' , $userId)->where('status' , 0 )->get() ;
+        $noti = Noti::where('receiver_id', $userId)->where('status', 0)->get();
         $num = -1;
-        if($noti) {
+        if ($noti) {
             $num = count($noti);
         }
         return response()->json([
             'statusCode' => 1,
-            'num' =>$num ,
+            'num' => $num,
         ]);
     }
 
-    public function  sendNoti(Request $request) {
-        $senderId = $request->user()->id ;
-        $noti = $request->noti ;
+    public function  sendNoti(Request $request)
+    {
+        $senderId = $request->user()->id;
+        $noti = $request->noti;
         $statusCode = 1;
-        try{
-        DB::transaction(function() use($senderId,$noti ) {
-          $send = Noti::insert([
-            'sender_id' => $senderId,
-            'receiver_id' =>(int)$noti['receiver_id'],
-            'title' => $noti['title'],
-            'content' => $noti['content'],
-            'noti_type_id' => $noti['noti_type_id'],
-            'created_at' => Carbon::now() ,
-            'updated_at' => Carbon::now() ,
-          ]) ;
-        });
-
-        }
-        catch(\ExcepTion $e) {
-            $statusCode = 0 ;
+        try {
+            DB::transaction(function () use ($senderId, $noti) {
+                $send = Noti::insert([
+                    'sender_id' => $senderId,
+                    'receiver_id' => (int)$noti['receiver_id'],
+                    'title' => $noti['title'],
+                    'content' => $noti['content'],
+                    'noti_type_id' => $noti['noti_type_id'],
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+            });
+        } catch (\ExcepTion $e) {
+            $statusCode = 0;
         }
         return response()->json([
-            'statusCode' =>$statusCode,
+            'statusCode' => $statusCode,
             'noti' => $noti,
         ]);
     }
-    public function isSeen($notiId){
+    public function isSeen($notiId)
+    {
         $noti = Noti::find($notiId);
-        $noti->status = 1 ;
-        $noti->save() ;
-        return response()->json(['statusCode' => 1 ]);
+        $noti->status = 1;
+        $noti->save();
+        return response()->json(['statusCode' => 1]);
     }
-    public static function sendNotiChoose($title,$senderId , $receiverId,$content,$notiTypeId,$room_id ,$status){
-        if($notiTypeId !=3 ) {
+    public function sendReport(Request $request)
+    {
+        $type = $request->type;
+        $content = $request->content;
+        $senderId = $request->senderId;
+        $title = 'báo cáo ';
+        if ($type == 1) {
+            //postId
+            $post = Post::find($request->postId);
+            if ($post->post_type_id == 1) {
+                $motel = $post->room_type->motel;
+            } else {
+                $motel = $post->room->room_type->motel;
+            }
+
+            $arrContent =
+                'trọ : ' . $motel->id . '-' . $motel->name . '<br/>' .
+                $content . '<br/>';
+            $title .= $motel->name;
+        } else if ($type == 2) {
+            //motelId
+            $motel = Motel::find($request->motelId);
+            $arrContent =
+                'trọ : ' . $motel->id . '-' . $motel->name . '<br/>' .
+                $content . '<br/>';
+
+            $title .= $motel->name;
+        } else {
+            //roomTypeId
+            $motel = RoomType::find($request->roomTypeId)->motel;
+            $arrContent =
+                'trọ : ' . $motel->id . '-' . $motel->name . '<br/>' .
+                $content . '<br/>';
+            $title .= $motel->name;
+        }
+
+        NotiController::sendNotiChoose($title ,$senderId, 3 , $arrContent , 2 , null, 0 );
+        return response()->json([
+            'statusCode' => 1 ,
+        ]);
+    }
+    public static function sendNotiChoose($title, $senderId, $receiverId, $content, $notiTypeId, $room_id, $status)
+    {
+        if ($notiTypeId != 3) {
             $roomId = null;
         }
         Noti::insert([
@@ -124,6 +169,6 @@ class NotiController extends Controller
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
-        return true ;
+        return true;
     }
 }

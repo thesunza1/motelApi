@@ -78,6 +78,7 @@ Route::middleware(['auth:sanctum'])->group(
     Route::get('getAllNoti', [NotiController::class, 'getAllNoti']);
     Route::get('getAllOutbox', [NotiController::class, 'getAllOutbox']);
     Route::get('countNoti', [NotiController::class, 'countNoti']);
+    Route::post('sendReport' , [NotiController::class, 'sendReport']);
     //notitype controller
     Route::get('notiType', [NotiTypeController::class, 'notiType']);
     Route::post('sendNoti', [NotiController::class, 'sendNoti']);

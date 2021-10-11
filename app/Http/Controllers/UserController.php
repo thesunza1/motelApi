@@ -168,6 +168,8 @@ class UserController extends Controller
 
         return response()->json([
             'statusCode' => 1,
+            'lat' => $motel->latitude,
+            'log' => $motel->longitude,
         ]);
     }
     //find user
