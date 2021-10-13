@@ -12,7 +12,7 @@ class RoomType extends Model
 
 
     public function posts() {
-        return $this->hasMany(Post::class);
+        return $this->hasOne(Post::class)->latest();
     }
 
     public function img_details() {
@@ -31,7 +31,7 @@ class RoomType extends Model
         return $this->hasMany(Room::class)->where('room_status_id' , 2 );
     }
     public function none_rooms() {
-        return $this->hasMany(Room::class)->where('room_status_id' , 1 );
+        return $this->hasMany(Room::class)->where('room_status_id','<>',  2 );
     }
     public function motel() {
         return $this->belongsTo(Motel::class);

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\PostResource;
+use App\Http\Resources\RoomTypeResource;
 use App\Models\Motel;
 use App\Models\TenantUser;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\PostType;
+use App\Models\RoomType;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -64,7 +66,7 @@ class PostController extends Controller
     public function getPost(Request $request)
     {
         $post_type = PostType::all();
-        $posts = Post::where('id', '>', 0)->orderByDesc('created_at');
+        $posts = Post::where('status', 1)->orderByDesc('created_at');
         $postsPaginator = $posts->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
             ->with('room_type.motel.user')->with('room.room_type.motel.user')
             ->with('room.latest_tenant.tenant_users.user')->paginate(9);
@@ -148,11 +150,11 @@ class PostController extends Controller
         // $test = DB::table('posts')->;
         if ($post_type == 1) {
             $room_types = DB::table('room_types');
-                // ->whereBetween('cost', [$price_min, $price_max])
-                // ->whereBetween('area', [$area_min, $area_max])
-                // ->where('male', $this->toSex('male', $sex))
-                // ->where('female', $this->toSex('female', $sex))
-                // ->where('everyone', $this->toSex('everyone', $sex));
+            // ->whereBetween('cost', [$price_min, $price_max])
+            // ->whereBetween('area', [$area_min, $area_max])
+            // ->where('male', $this->toSex('male', $sex))
+            // ->where('female', $this->toSex('female', $sex))
+            // ->where('everyone', $this->toSex('everyone', $sex));
             // $roMotel =  $room_types->join('motels', function ($join) use ($address, $search, $arrAddress, $arrSearch) {
             //     $join->on('room_types.motel_id', '=', 'motels.id')
             //         ->where('motels.address', 'like', '%' . $address . '%')
@@ -173,23 +175,23 @@ class PostController extends Controller
             //         });
             // })
             //     ->select('room_types.id as room_type_id')->get();
-            $roMotel = $room_types->join('motels', 'room_types.motel_id', '=' , 'motels.id')
-                    ->where('motels.address', 'like', '%' . $address . '%')
-                    ->where('motels.name', 'like', '%' . $search . '%')
-                    ->orwhere(function ($query) use ($arrSearch) {
-                        if (count($arrSearch) > 1) {
-                            foreach ($arrSearch as $val) {
-                                $query->orwhere('motels.name', 'like', '%'.$val.'%');
-                            }
+            $roMotel = $room_types->join('motels', 'room_types.motel_id', '=', 'motels.id')
+                ->where('motels.address', 'like', '%' . $address . '%')
+                ->where('motels.name', 'like', '%' . $search . '%')
+                ->orwhere(function ($query) use ($arrSearch) {
+                    if (count($arrSearch) > 1) {
+                        foreach ($arrSearch as $val) {
+                            $query->orwhere('motels.name', 'like', '%' . $val . '%');
                         }
-                    })
-                    ->orwhere(function ($query) use ($arrAddress) {
-                        if (count($arrAddress) > 1) {
-                            foreach ($arrAddress as $val) {
-                                $query->orwhere('motels.address', 'like', '%'.$val.'%');
-                            }
+                    }
+                })
+                ->orwhere(function ($query) use ($arrAddress) {
+                    if (count($arrAddress) > 1) {
+                        foreach ($arrAddress as $val) {
+                            $query->orwhere('motels.address', 'like', '%' . $val . '%');
                         }
-                    })
+                    }
+                })
                 ->select('room_types.id as room_type_id')->get();
 
             $roMotelArr = [];
@@ -243,7 +245,52 @@ class PostController extends Controller
             'address' => $arrAddress,
         ]);
     }
+    //changeStatePost post :
+    public function changeStatusPost(Request $request)
+    {
+        $post = Post::find($request->postId);
+        $statusPost = $post->status;
 
+        $post->status = ($statusPost == 0) ? 1 : 0;
+        $post->save();
+
+        return response()->json([
+            'statusCode' => 1,
+        ]);
+    }
+    //get post motel get :
+    public function getPostMotel(Request $request)
+    {
+        $roomTypes = $request->user()->motel->room_types->loadMissing('posts');
+        $ResroomTypes = RoomTypeResource::collection($roomTypes);
+
+        return response()->json([
+            'statusCode' => 1,
+            'roomTypes' => $ResroomTypes,
+        ]);
+    }
+
+    //createpostmotel post :
+    public function createPostMotel(Request $request)
+    {
+        $motel = $request->user()->motel;
+        $room_types = $motel->room_types;
+        DB::transaction(function () use ($motel, $room_types) {
+            foreach ($room_types as $type) {
+                $type->posts()->create([
+                    'title' => $motel->name,
+                    'room_id' => null,
+                    'conpound_content' => '',
+                    'content' => '',
+                    'status' => 1,
+                    'post_type_id' => 1
+                ]);
+            }
+        });
+        return response()->json([
+            'statusCode' => 1,
+        ]);
+    }
     //sp function
     public function toSex($sexIn, $sex)
     {
@@ -255,5 +302,24 @@ class PostController extends Controller
             $num = ($sex == 1 || $sex == 2) ? 1 : 0;
         }
         return $num;
+    }
+    //status function
+    public static function checkPost($roomTypeId)
+    {
+        $roomType = RoomType::find($roomTypeId);
+        $room = $roomType->none_rooms;
+        // $room = $roomType->had_rooms;
+        $numRoom = count($room);
+
+        $post = $roomType->posts;
+        if ($post != null) {
+            if ($numRoom == 0) {
+                $post->status = 0;
+                $post->save();
+            } else {
+                $post->status = 1;
+                $post->save();
+            }
+        }
     }
 }

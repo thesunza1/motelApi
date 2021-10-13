@@ -22,14 +22,17 @@ class RoomController extends Controller
         $id = $request->id;
         $roomStatusId = $request->roomStatusId;
         $room = Room::find($id);
+        $roomType = $room->room_type ;
         if ($roomStatusId == 2) {
             $statusCode = 0;
         } else {
             $room->room_status_id = $roomStatusId;
             $room->save();
+            $numRoom=  PostController::checkPost($roomType->id);
         };
         return response()->json([
             'statusCode' => $statusCode,
+            'num' => $numRoom,
         ]);
     }
     public function getNotiRoom($roomId)
@@ -49,13 +52,14 @@ class RoomController extends Controller
 
         $userHaveRoom = $request->user()->have_room;
         $roomStatus = $room->room_status_id;
+        $roomType = $room->room_type;
         if ($userHaveRoom == 1) {
             return response()->json([
                 'statusCode' => 0,
             ]); //user have motel ,
         }
         if ($roomStatus == 1) {
-            DB::transaction(function () use ($room, $userId) {
+            DB::transaction(function () use ($room, $userId ,$roomType) {
                 $user = User::find($userId);
                 $tenant = $room->tenants()->create([
                     'created_at' => Carbon::now(),
@@ -70,6 +74,8 @@ class RoomController extends Controller
                 $room->save();
                 $user->have_room = 1;
                 $user->save();
+
+                PostController::checkPost($roomType->id) ;
             });
             return response()->json([
                 'statusCode' => 1,
@@ -104,6 +110,7 @@ class RoomController extends Controller
         $tenantUsers = $tenant->tenant_users;
         $bills = $tenant->bills;
         $room = $tenant->room;
+        $roomType = $room->room_type;
         foreach ($bills as $bill) {
             if ($bill->status == 0) {
                 return response()->json([
@@ -111,7 +118,7 @@ class RoomController extends Controller
                 ]);
             }
         }
-        DB::transaction(function () use ($user, $tenant, $room, $tenantUsers) {
+        DB::transaction(function () use ($user, $tenant, $room, $tenantUsers ,$roomType) {
             $numTenantUsers = count($tenantUsers);
             if ($numTenantUsers == 1) {
                 $tenant->status = 1;
@@ -123,6 +130,8 @@ class RoomController extends Controller
             }
             $user->have_room = 0;
             $user->save();
+
+            PostController::checkPost($roomType->id) ;
         });
         return response()->json([
             'statusCode' => 1

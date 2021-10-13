@@ -114,6 +114,9 @@ Route::middleware(['auth:sanctum'])->group(
     Route::post('deleteConpound', [PostController::class, 'deleteConpound']);
     Route::post('sendIntoNoti', [PostController::class, 'sendIntoNoti']);
     Route::post('sendIntoNotiRoom', [PostController::class, 'sendIntoNotiRoom']);
+    Route::post('changeStatusPost', [PostController::class, 'changeStatusPost']);
+    Route::get('getPostMotel', [PostController::class, 'getPostMotel']);
+    Route::post('createPostMotel', [PostController::class, 'createPostMotel']);
     //billController
     Route::get('getBillAllRoom', [BillController::class, 'getBillAllRoom']);
     Route::post('createAllBill', [BillController::class, 'createAllBill']);
