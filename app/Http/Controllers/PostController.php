@@ -11,6 +11,7 @@ use App\Models\Post;
 use App\Models\PostType;
 use App\Models\RoomType;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
@@ -19,7 +20,15 @@ class PostController extends Controller
     public function createPostUser(Request $request)
     {
         $userId = $request->user()->id;
-        $roomId = TenantUser::where('user_id', $userId)->first()->tenant->room->id;
+        $room = TenantUser::where('user_id', $userId)->first()->tenant->room;
+        $roomId = $room->id ;
+        $posth = count($room->posts) ;
+        if($posth > 0 ) {
+            return response()->json([
+                'statusCode' => 0
+                ,'posts' => $posth ,
+            ]);
+        }
         $title = ' tìm người ở ghép ';
         $conpound_content = $request->content;
         $post = Post::create([
@@ -32,7 +41,7 @@ class PostController extends Controller
         ]);
         return response()->json([
             'statusCode' => 1,
-            'post' => $post,
+            'posts' => $post,
         ]);
     }
     public function getPostConpound(Request $request)
@@ -66,7 +75,7 @@ class PostController extends Controller
     public function getPost(Request $request)
     {
         $post_type = PostType::all();
-        $posts = Post::where('status', 1)->orderByDesc('created_at');
+        $posts = Post::where('status', 1)->orderByDesc('updated_at');
         $postsPaginator = $posts->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
             ->with('room_type.motel.user')->with('room.room_type.motel.user')
             ->with('room.latest_tenant.tenant_users.user')->paginate(9);
@@ -252,6 +261,7 @@ class PostController extends Controller
         $statusPost = $post->status;
 
         $post->status = ($statusPost == 0) ? 1 : 0;
+        $post->updated_at = Carbon::now() ;
         $post->save();
 
         return response()->json([
@@ -315,9 +325,11 @@ class PostController extends Controller
         if ($post != null) {
             if ($numRoom == 0) {
                 $post->status = 0;
+                $post->updated_at = Carbon::now() ;
                 $post->save();
             } else {
                 $post->status = 1;
+                $post->updated_at = Carbon::now() ;
                 $post->save();
             }
         }

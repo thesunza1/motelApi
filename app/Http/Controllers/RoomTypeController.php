@@ -103,6 +103,17 @@ class RoomTypeController extends Controller
         $numRoom = $request->numRoom;
         $img_num = $request->img_num;
         $roomType = $motel->room_types()->create($roomTypeData);
+
+        $post = $roomType->posts()->create([
+            'room_id' => null,
+            'post_type_id' => 1 ,
+            'conpound_content' => ' ' ,
+            'content' => ' ',
+            'status' => 1 ,
+            'title' => $motel->name  ,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
         //create imgdetail
         $pathfile = 'image';
         for ($i = 0; $i < $img_num; $i++) {
