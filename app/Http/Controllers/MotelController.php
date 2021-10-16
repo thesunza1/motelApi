@@ -15,13 +15,24 @@ use Illuminate\Support\Facades\DB;
 
 class MotelController extends Controller
 {
-    //
+    //get motels for motel
+    public function getMotels(Request $request) {
+        $motels = $request->user()->motels ;
+        $motelsRelation = $motels->loadMissing(['room_types.rooms.room_status']) ;
+        $motelArr = MotelResource::collection($motelsRelation) ;
+        return response()->json([
+            'motels' => $motelArr,
+            'statusCode' => 1 ,
+        ]);
+    }
+    //get a motel - roomtype - rooms - room_status ;
     public function getMotelRoomType(Request $request)
     {
         $motelId = $request->user()->motel->id;
         $motel = Motel::find($motelId)->loadMissing(['room_types.rooms.room_status']);
         return (new MotelResource($motel));
     }
+    //get : get infor share motel
     public function getInfoShareMotel(Request $request)
     {
         $userId = $request->user()->id;
@@ -38,12 +49,14 @@ class MotelController extends Controller
             'statusCode' => 1,
         ]);
     }
+    //get a motel
     public static function getMotel($userId)
     {
         $user = User::find($userId);
         $motel = $user->motel;
         return $motel;
     }
+    //get all motel
     public function updateMotelInfor(Request $request)
     {
         $motel = $request->user()->motel;

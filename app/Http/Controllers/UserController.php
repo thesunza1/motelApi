@@ -173,9 +173,9 @@ class UserController extends Controller
         ]);
     }
     //find user
-    public function findUser($id)
+    public function findUser($email)
     {
-        $user = User::find($id);
+        $user = User::where('email',$email)->get();
         $statusCode = 1;
         if (!$user) $statusCode = 2;
         return response()->json([

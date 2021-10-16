@@ -52,6 +52,10 @@ class User extends Authenticatable
     public function motel() {
         return $this->hasOne(Motel::class);
     }
+    //motel ont to many
+    public function motels() {
+        return $this->hasMany(Motel::class);
+    }
     //role one to many invert
     public function role() {
         return $this->belongsTo(Role::class);
