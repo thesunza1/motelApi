@@ -271,7 +271,8 @@ class PostController extends Controller
     //get post motel get :
     public function getPostMotel(Request $request)
     {
-        $roomTypes = $request->user()->motel->room_types->loadMissing('posts');
+        $roomTypes = $request->user()->motel->room_types->loadMissing('posts')
+            ->loadMissing('img_details');
         $ResroomTypes = RoomTypeResource::collection($roomTypes);
 
         return response()->json([
