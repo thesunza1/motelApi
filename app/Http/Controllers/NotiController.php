@@ -85,12 +85,13 @@ class NotiController extends Controller
     {
         $senderId = $request->user()->id;
         $noti = $request->noti;
+        $receiverId = $request->receiver_id ;
         $statusCode = 1;
         try {
-            DB::transaction(function () use ($senderId, $noti) {
+            DB::transaction(function () use ($senderId, $noti , $receiverId) {
                 $send = Noti::insert([
                     'sender_id' => $senderId,
-                    'receiver_id' => (int)$noti['receiver_id'],
+                    'receiver_id' => (int) $receiverId,
                     'title' => $noti['title'],
                     'content' => $noti['content'],
                     'noti_type_id' => $noti['noti_type_id'],
