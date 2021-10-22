@@ -39,7 +39,7 @@ class TenantRoomEquipController extends Controller
     public function createTenantRoomEquips(Request $request)
     {
         $userId = $request->user()->id;
-        $tenant_user = TenantUser::where('user_id', $userId)->first();
+        $tenant_user = TenantUser::where('user_id', $userId)->latest()->first();
         $tenant = $tenant_user->tenant;
         $tenant->eq_status= 0 ;
         $tenant->save() ;
@@ -50,10 +50,10 @@ class TenantRoomEquipController extends Controller
         $room = $tenant->room;
         $motelUser = $room->room_type->motel->user;
 
-        $title  = ' phòng ' . $room->name;
+        $title  = ' Xác nhận phòng ' . $room->name;
         $sender_id = $userId;
         $receiver_id = $motelUser->id;
-        $content = 'xác nhận tình trạng thiết bị phòng!';
+        $content = 'Xác nhận tình trạng thiết bị phòng!';
         $noti_type_id = 4;
         DB::transaction(function () use ($tenant, $oldLen, $newEquips, $newLen) {
             for ($i = 0; $i < $newLen; $i++) {
