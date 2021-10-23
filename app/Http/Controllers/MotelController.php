@@ -16,13 +16,14 @@ use Illuminate\Support\Facades\DB;
 class MotelController extends Controller
 {
     //get motels for motel
-    public function getMotels(Request $request) {
-        $motels = $request->user()->motels ;
-        $motelsRelation = $motels->loadMissing(['room_types.rooms.room_status']) ;
-        $motelArr = MotelResource::collection($motelsRelation) ;
+    public function getMotels(Request $request)
+    {
+        $motels = $request->user()->motels;
+        $motelsRelation = $motels->loadMissing(['room_types.rooms.room_status']);
+        $motelArr = MotelResource::collection($motelsRelation);
         return response()->json([
             'motels' => $motelArr,
-            'statusCode' => 1 ,
+            'statusCode' => 1,
         ]);
     }
     //get a motel - roomtype - rooms - room_status ;
@@ -108,36 +109,19 @@ class MotelController extends Controller
 
     public function findMotel(Request $request)
     {
-        $motelId = $request->motelId;
-        $userId = $request->userId;
+        $email = $request->email;
 
-
-        if (!$motelId) {
-            $motel = User::find($userId)->motel;
-            if ($motel != null) {
-                $motel->user;
-                return response()->json([
-                    'statusCode' => 1,
-                    'motel' => $motel,
-                ]);
-            } else {
-                return response()->json([
-                    'statusCode' => 2,
-                ]);
-            }
+        $motel = User::where('email',$email)->first()->motel;
+        if ($motel != null) {
+            $motel->user;
+            return response()->json([
+                'statusCode' => 1,
+                'motel' => $motel,
+            ]);
         } else {
-            $motel = Motel::find($motelId);
-            if ($motel != null) {
-                $motel->user;
-                return response()->json([
-                    'statusCode' => 1,
-                    'motel' => $motel,
-                ]);
-            } else {
-                return response()->json([
-                    'statusCode' => 2,
-                ]);
-            }
+            return response()->json([
+                'statusCode' => 2,
+            ]);
         }
     }
 
@@ -188,7 +172,7 @@ class MotelController extends Controller
             $motel->user()->delete();
         });
         return response()->json([
-            'statusCode' => 1 ,
+            'statusCode' => 1,
         ]);
     }
 }

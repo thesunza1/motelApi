@@ -26,7 +26,7 @@ class RoomTypeController extends Controller
         $tenantUser = TenantUser::where('user_id', $userId)->first();
         $tenant_id = $tenantUser->tenant_id;
         $roomType = Tenant::find($tenant_id)->room->room_type;
-        $roomType->motel;
+        $roomType->motel->user;
         return response()->json([
             'statusCode' => 1,
             'roomType' => $roomType,
