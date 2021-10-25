@@ -49,8 +49,8 @@ class TenantRoomEquipController extends Controller
 
         $room = $tenant->room;
         $motelUser = $room->room_type->motel->user;
-
-        $title  = ' Xác nhận phòng ' . $room->name;
+        $motel= $room->room_type->motel;
+        $title  = ' Xác nhận phòng ' . $room->name . ' Trọ '.$motel->name;
         $sender_id = $userId;
         $receiver_id = $motelUser->id;
         $content = 'Xác nhận tình trạng thiết bị phòng!';

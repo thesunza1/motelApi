@@ -19,7 +19,8 @@ class BillController extends Controller
     //
     public function getBillAllRoom(Request $request)
     {
-        $roomType = User::find($request->user()->id)->motel->room_types;
+        // $roomType = User::find($request->user()->id)->motel->room_types;
+        $roomType = Motel::find($request->motelId)->room_types;
         $roomType = $roomType->loadMissing('had_rooms.latest_tenant.bills')->loadMissing('had_rooms.latest_tenant.no_bills')->loadMissing('had_rooms.latest_tenant.num_bills');
         //$roomType = $roomType->loadMissing('had_rooms.latest_tenant.bills')->loadMissing('had_rooms.latest_tenant.no_bills');
         $bill = RoomTypeBillResource::collection($roomType);
@@ -31,8 +32,8 @@ class BillController extends Controller
     public function createAllBill(Request $request)
     {
         //get request
-        $userId = $request->user()->id;
-        $motel = User::find($userId)->motel; // motel from user id
+        // $userId = $request->user()->id;
+        $motel = Motel::find($request->motelId); // motel from user id
         $roomTypes = $motel->room_types;    //room type
 
         $statusCode = DB::transaction(function ()  use ($roomTypes, $motel) {
@@ -102,7 +103,8 @@ class BillController extends Controller
         //get request
         $someRoom = $request->rooms;
         $userId = $request->user()->id;
-        $motel = User::find($userId)->motel; // motel from user id
+        // $motel = User::find($userId)->motel; // motel from user id
+        $motel= Motel::find($request->motelId);
         $roomTypes = $motel->room_types;    //room type
 
         $statusCode = DB::transaction(function ()  use ($roomTypes, $motel,$someRoom) {
@@ -285,10 +287,11 @@ class BillController extends Controller
         $userId = $request->user()->id ;
         $content= $request->content ;
         $room = Room::find($request->room_id);
-        $bill = $request->bill;
-        $title = "phòng $room->name bill " .$bill['date_begin'] . '-'.$bill['date_end'];
         $user = User::find($userId) ;
-        $receiver = $user->latest_tenant_user->tenant->room->room_type->motel->user ;
+        $bill = $request->bill;
+        $motel= $user->latest_tenant_user->tenant->room->room_type->motel;
+        $title = "phòng $room->name bill ".' Trọ '. $motel->name .' ngày ' .$bill['date_begin'] . '-'.$bill['date_end'];
+        $receiver = $motel->user ;
         $receiver_id = $receiver->id ;
 
         NotiController::sendNotiChoose($title,$userId,$receiver_id,$content,4,null,0);

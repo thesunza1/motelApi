@@ -49,12 +49,14 @@ Route::get('/ooo', function () {
 Route::middleware(['auth:sanctum'])->group(
   function () {
     //motel controller
-    Route::get('getMotelRoomType', [MotelController::class, 'getMotelRoomType']);
+    Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);
     Route::get('getInfoShareMotel', [MotelController::class, 'getInfoShareMotel']);
+    Route::get('getMotels', [MotelController::class, 'getMotels']);
     Route::post('updateMotelInfor' , [MotelController::class, 'updateMotelInfor']);
     Route::post('updateMotelImg' , [MotelController::class, 'updateMotelImg']);
     Route::Post('findMotel', [MotelController::class, 'findMotel']);
     Route::Post('deleteMotel', [MotelController::class, 'adminDeleteMotel']);
+
     //user controller
     Route::get('findUser/{email}', [UserController::class, 'findUser']);
     Route::post('logoutAllDevice', [UserController::class, 'logoutAllDevice']);
@@ -94,7 +96,7 @@ Route::middleware(['auth:sanctum'])->group(
 
     //RoomType Controller
     Route::get('getRoomTypeUser', [RoomTypeController::class, 'getRoomTypeUser']);
-    Route::get('getRoomTypeImgs', [RoomTypeController::class, 'getRoomTypeImgs']);
+    Route::get('getRoomTypeImgs/{motelId}', [RoomTypeController::class, 'getRoomTypeImgs']);
     Route::post('addNumRoom', [RoomTypeController::class, 'addNumRoom']);
     Route::post('updateRoomTypeContent', [RoomTypeController::class, 'updateRoomTypeContent']);
     Route::post('createRoomType', [RoomTypeController::class, 'createRoomType']);
@@ -116,11 +118,11 @@ Route::middleware(['auth:sanctum'])->group(
     Route::post('sendIntoNoti', [PostController::class, 'sendIntoNoti']);
     Route::post('sendIntoNotiRoom', [PostController::class, 'sendIntoNotiRoom']);
     Route::post('changeStatusPost', [PostController::class, 'changeStatusPost']);
-    Route::get('getPostMotel', [PostController::class, 'getPostMotel']);
+    Route::get('getPostMotel/{motelId}', [PostController::class, 'getPostMotel']);
     Route::post('createPostMotel', [PostController::class, 'createPostMotel']);
     //billController
-    Route::get('getBillAllRoom', [BillController::class, 'getBillAllRoom']);
-    Route::post('createAllBill', [BillController::class, 'createAllBill']);
+    Route::get('getBillAllRoom/{motelId}', [BillController::class, 'getBillAllRoom']);
+    Route::post('createAllBill/{motelId}', [BillController::class, 'createAllBill']);
     Route::post('createSomeBill', [BillController::class, 'createSomeBill']);
     Route::post('updateBillNum', [BillController::class, 'updateBillNum']);
     Route::post('updateBillStatus', [BillController::class, 'updateBillStatus']);
@@ -130,18 +132,16 @@ Route::middleware(['auth:sanctum'])->group(
     Route::post('sendBillYes', [BillController::class, 'sendBillYes']);
     Route::post('sendBillError', [BillController::class, 'sendBillError']);
     //motelImgController
-    Route::get('getMotelImgs', [MotelImgController::class, 'getMotelImgs']);
+    Route::get('getMotelImgs/{motelId}', [MotelImgController::class, 'getMotelImgs']);
     //imgDetailcontroller
 
     //commentController
     Route::post('createComment', [CommentController::class, 'createComment']);
     //uploadController
-    // Route::put('uploadImg/{count}', [UploadController::class, 'uploadImg']);
     Route::post('uploadImg', [UploadController::class, 'uploadImg']);
     Route::post('uploadRoomImg', [UploadController::class, 'uploadRoomImg']);
   }
 );
-// Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
   return response()->json([
     'user' => $request->user()

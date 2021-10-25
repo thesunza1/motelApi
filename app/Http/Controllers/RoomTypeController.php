@@ -35,7 +35,7 @@ class RoomTypeController extends Controller
 
     public function getRoomTypeImgs(Request $request)
     {
-        $motel = MotelController::getMotel($request->user()->id);
+        $motel = Motel::find($request->motelId) ;
         $roomTypes = $motel->room_types;
         $roomTypesImgs = $roomTypes->loadMissing('img_details');
         $array = RoomTypeResource::collection($roomTypesImgs);
@@ -87,7 +87,7 @@ class RoomTypeController extends Controller
     }
     public function createRoomType(Request $request)
     {
-        $motel = $request->user()->motel;
+        $motel = Motel::find($request->motelId);
         //create room_type
         $roomTypeData  = [
             'content' => $request->content,

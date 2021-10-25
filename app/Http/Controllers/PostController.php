@@ -271,7 +271,8 @@ class PostController extends Controller
     //get post motel get :
     public function getPostMotel(Request $request)
     {
-        $roomTypes = $request->user()->motel->room_types->loadMissing('posts')
+        $motel = Motel::find($request->motelId);
+        $roomTypes = $motel->room_types->loadMissing('posts')
             ->loadMissing('img_details');
         $ResroomTypes = RoomTypeResource::collection($roomTypes);
 
@@ -284,7 +285,7 @@ class PostController extends Controller
     //createpostmotel post :
     public function createPostMotel(Request $request)
     {
-        $motel = $request->user()->motel;
+        $motel = Motel::find($request->motelId);
         $room_types = $motel->room_types;
         DB::transaction(function () use ($motel, $room_types) {
             foreach ($room_types as $type) {

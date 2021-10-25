@@ -7,8 +7,6 @@ use App\Models\Motel;
 use App\Http\Resources\MotelResource;
 use App\Http\Resources\RoomTypeResource;
 use App\Models\MotelImg;
-use App\Models\RoomType;
-use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +17,7 @@ class MotelController extends Controller
     public function getMotels(Request $request)
     {
         $motels = $request->user()->motels;
-        $motelsRelation = $motels->loadMissing(['room_types.rooms.room_status']);
+        $motelsRelation = $motels->loadMissing(['room_types.rooms.room_status'])->loadMissing('user');
         $motelArr = MotelResource::collection($motelsRelation);
         return response()->json([
             'motels' => $motelArr,
@@ -29,7 +27,8 @@ class MotelController extends Controller
     //get a motel - roomtype - rooms - room_status ;
     public function getMotelRoomType(Request $request)
     {
-        $motelId = $request->user()->motel->id;
+        // $motelId = $request->user()->motel->id;
+        $motelId = $request->motelId;
         $motel = Motel::find($motelId)->loadMissing(['room_types.rooms.room_status']);
         return (new MotelResource($motel));
     }
@@ -60,7 +59,7 @@ class MotelController extends Controller
     //get all motel
     public function updateMotelInfor(Request $request)
     {
-        $motel = $request->user()->motel;
+        $motel = Motel::find($request->motelId);
         $motel->update([
             'name' => $request->names,
             'address' => $request->address,

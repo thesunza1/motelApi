@@ -41,7 +41,7 @@ class TenantController extends Controller
             'elec_num' => $tenant->elec_num,
             'water_num' => $tenant->water_num,
             'num_status' => $tenant->num_status,
-            'eq_status' => $tenant->eq_status, 
+            'eq_status' => $tenant->eq_status,
         ]);
     }
     public function updateNumRoom(Request $request)
@@ -49,8 +49,9 @@ class TenantController extends Controller
         $userId = $request->user()->id;
         // $tenant = $this->spGetTenant($userId);
         $tenant = $request->user()->latest_tenant_user->tenant;
+        $motel= $tenant->room->room_type->motel;
         $room = $tenant->room;
-        $title = 'xác nhận phòng ' . $room->name;
+        $title = 'xác nhận phòng ' . $room->name .' Trọ '. $motel->name ;
         $content = 'xác nhận số điện , nước ';
         $sender_id = $userId;
         $receiver_id = $room->room_type->motel->user->id;
