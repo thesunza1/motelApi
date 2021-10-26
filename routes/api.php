@@ -43,109 +43,110 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('userRegister', [UserController::class, 'userRegister']);
 Route::post('motelRegister', [UserController::class, 'motelRegister']);
 Route::get('/ooo', function () {
-  return response('sldkfjs', 200);
+    return response('sldkfjs', 200);
 });
 //Motel
 Route::middleware(['auth:sanctum'])->group(
-  function () {
-    //motel controller
-    Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);
-    Route::get('getInfoShareMotel', [MotelController::class, 'getInfoShareMotel']);
-    Route::get('getMotels', [MotelController::class, 'getMotels']);
-    Route::post('updateMotelInfor' , [MotelController::class, 'updateMotelInfor']);
-    Route::post('updateMotelImg' , [MotelController::class, 'updateMotelImg']);
-    Route::Post('findMotel', [MotelController::class, 'findMotel']);
-    Route::Post('deleteMotel', [MotelController::class, 'adminDeleteMotel']);
+    function () {
+        //motel controller
+        Route::get('getMotelRoomType/{motelId}', [MotelController::class, 'getMotelRoomType']);
+        Route::get('getInfoShareMotel', [MotelController::class, 'getInfoShareMotel']);
+        Route::get('getMotels', [MotelController::class, 'getMotels']);
+        Route::post('updateMotelInfor', [MotelController::class, 'updateMotelInfor']);
+        Route::post('updateMotelImg', [MotelController::class, 'updateMotelImg']);
+        Route::Post('findMotel', [MotelController::class, 'findMotel']);
+        Route::Post('deleteMotel', [MotelController::class, 'adminDeleteMotel']);
+        Route::post('motelRegisterOne', [UserController::class, 'motelRegisterOne']);
 
-    //user controller
-    Route::get('findUser/{email}', [UserController::class, 'findUser']);
-    Route::post('logoutAllDevice', [UserController::class, 'logoutAllDevice']);
-    Route::get('getUser', [UserController::class, 'getUser']);  // -> user (response);
-    Route::post('updateUP', [UserController::class, 'updateUP']);
-    Route::post('updateAccount', [UserController::class, 'updateAccount']);
-    Route::put('updateUser/{userId}', [UserController::class,'updateUser']);
-    Route::put('deleteUser/{userId}', [UserController::class,'deleteUser']);
-    //role
-    Route::get('roles/{role}', [RoleController::class, 'index']);
-    //roomStatuses
-    Route::get('roomStatuses', [RoomStatusController::class, 'roomStatuses']);
-    //roomController
-    Route::put('updateRoomStatus/{id}', [RoomController::class, 'updateRoomStatus']);
-    Route::post('intoRoom', [RoomController::class, 'intoRoom']);
-    Route::post('outRoom', [RoomController::class, 'outRoom']);
-    Route::post('adminOutRoom', [RoomController::class, 'adminOutRoom']);
-    Route::get('getRoom/{roomId}', [RoomController::class,'getRoom']);
-    //notiController
-    Route::post('sendInvite', [NotiController::class, 'sendInvite']);
-    //noti coontroller
-    Route::get('getAllNoti', [NotiController::class, 'getAllNoti']);
-    Route::get('getAllOutbox', [NotiController::class, 'getAllOutbox']);
-    Route::get('countNoti', [NotiController::class, 'countNoti']);
-    Route::post('sendReport' , [NotiController::class, 'sendReport']);
-    //notitype controller
-    Route::get('notiType', [NotiTypeController::class, 'notiType']);
-    Route::post('sendNoti', [NotiController::class, 'sendNoti']);
-    Route::get('isSeen/{notiId}', [NotiController::class, 'isSeen']);
-    //tenant Controller
-    Route::get('getTenant', [TenantController::class, 'getTenant']);
-    Route::get('getNumRoom', [TenantController::class, 'getNumRoom']);
-    Route::post('updateNumRoom', [TenantController::class, 'UpdateNumRoom']);
-    Route::get('getTenantUser/{room_id}', [TenantController::class, 'getTenantUser']);
-    Route::get('confirmEq/{tenant_id}', [TenantController::class, 'confirmEq']);
-    Route::get('confirmNum/{tenant_id}', [TenantController::class, 'confirmNum']);
+        //user controller
+        Route::get('findUser/{email}', [UserController::class, 'findUser']);
+        Route::post('logoutAllDevice', [UserController::class, 'logoutAllDevice']);
+        Route::get('getUser', [UserController::class, 'getUser']);  // -> user (response);
+        Route::post('updateUP', [UserController::class, 'updateUP']);
+        Route::post('updateAccount', [UserController::class, 'updateAccount']);
+        Route::put('updateUser/{userId}', [UserController::class, 'updateUser']);
+        Route::put('deleteUser/{userId}', [UserController::class, 'deleteUser']);
+        //role
+        Route::get('roles/{role}', [RoleController::class, 'index']);
+        //roomStatuses
+        Route::get('roomStatuses', [RoomStatusController::class, 'roomStatuses']);
+        //roomController
+        Route::put('updateRoomStatus/{id}', [RoomController::class, 'updateRoomStatus']);
+        Route::post('intoRoom', [RoomController::class, 'intoRoom']);
+        Route::post('outRoom', [RoomController::class, 'outRoom']);
+        Route::post('adminOutRoom', [RoomController::class, 'adminOutRoom']);
+        Route::get('getRoom/{roomId}', [RoomController::class, 'getRoom']);
+        //notiController
+        Route::post('sendInvite', [NotiController::class, 'sendInvite']);
+        //noti coontroller
+        Route::get('getAllNoti', [NotiController::class, 'getAllNoti']);
+        Route::get('getAllOutbox', [NotiController::class, 'getAllOutbox']);
+        Route::get('countNoti', [NotiController::class, 'countNoti']);
+        Route::post('sendReport', [NotiController::class, 'sendReport']);
+        //notitype controller
+        Route::get('notiType', [NotiTypeController::class, 'notiType']);
+        Route::post('sendNoti', [NotiController::class, 'sendNoti']);
+        Route::get('isSeen/{notiId}', [NotiController::class, 'isSeen']);
+        //tenant Controller
+        Route::get('getTenant', [TenantController::class, 'getTenant']);
+        Route::get('getNumRoom', [TenantController::class, 'getNumRoom']);
+        Route::post('updateNumRoom', [TenantController::class, 'UpdateNumRoom']);
+        Route::get('getTenantUser/{room_id}', [TenantController::class, 'getTenantUser']);
+        Route::get('confirmEq/{tenant_id}', [TenantController::class, 'confirmEq']);
+        Route::get('confirmNum/{tenant_id}', [TenantController::class, 'confirmNum']);
 
-    //RoomType Controller
-    Route::get('getRoomTypeUser', [RoomTypeController::class, 'getRoomTypeUser']);
-    Route::get('getRoomTypeImgs/{motelId}', [RoomTypeController::class, 'getRoomTypeImgs']);
-    Route::post('addNumRoom', [RoomTypeController::class, 'addNumRoom']);
-    Route::post('updateRoomTypeContent', [RoomTypeController::class, 'updateRoomTypeContent']);
-    Route::post('createRoomType', [RoomTypeController::class, 'createRoomType']);
-    Route::post('deleteRoomType',[RoomTypeController::class , 'deleteRoomType']);
-    //tenant room equip controller
-    Route::get('getTenantRoomEquips', [TenantRoomEquipController::class, 'getTenantRoomEquips']);
-    Route::post('deleteTenantRoomEquip', [TenantRoomEquipController::class, 'deleteTenantRoomEquip']);
-    Route::post('createTenantRoomEquips', [TenantRoomEquipController::class, 'createTenantRoomEquips']);
-    //tenant user controller
-    Route::get('getTenantUsers/{tenantId}', [TenantUserController::class, 'getTenantUsers']);
-    Route::get('getInfoShare', [TenantUserController::class, 'getInfoShare']);
-    Route::get('changeInfoShare/{tenant_user_id}', [TenantUserController::class, 'changeInfoShare']);
+        //RoomType Controller
+        Route::get('getRoomTypeUser', [RoomTypeController::class, 'getRoomTypeUser']);
+        Route::get('getRoomTypeImgs/{motelId}', [RoomTypeController::class, 'getRoomTypeImgs']);
+        Route::post('addNumRoom', [RoomTypeController::class, 'addNumRoom']);
+        Route::post('updateRoomTypeContent', [RoomTypeController::class, 'updateRoomTypeContent']);
+        Route::post('createRoomType', [RoomTypeController::class, 'createRoomType']);
+        Route::post('deleteRoomType', [RoomTypeController::class, 'deleteRoomType']);
+        //tenant room equip controller
+        Route::get('getTenantRoomEquips', [TenantRoomEquipController::class, 'getTenantRoomEquips']);
+        Route::post('deleteTenantRoomEquip', [TenantRoomEquipController::class, 'deleteTenantRoomEquip']);
+        Route::post('createTenantRoomEquips', [TenantRoomEquipController::class, 'createTenantRoomEquips']);
+        //tenant user controller
+        Route::get('getTenantUsers/{tenantId}', [TenantUserController::class, 'getTenantUsers']);
+        Route::get('getInfoShare', [TenantUserController::class, 'getInfoShare']);
+        Route::get('changeInfoShare/{tenant_user_id}', [TenantUserController::class, 'changeInfoShare']);
 
-    //postController
-    Route::get('getPostConpound', [PostController::class, 'getPostConpound']);
-    Route::post('createPostUser', [PostController::class, 'createPostUser']);
-    Route::post('changeStatusConpound', [PostController::class, 'changeStatusConpound']);
-    Route::post('deleteConpound', [PostController::class, 'deleteConpound']);
-    Route::post('sendIntoNoti', [PostController::class, 'sendIntoNoti']);
-    Route::post('sendIntoNotiRoom', [PostController::class, 'sendIntoNotiRoom']);
-    Route::post('changeStatusPost', [PostController::class, 'changeStatusPost']);
-    Route::get('getPostMotel/{motelId}', [PostController::class, 'getPostMotel']);
-    Route::post('createPostMotel', [PostController::class, 'createPostMotel']);
-    //billController
-    Route::get('getBillAllRoom/{motelId}', [BillController::class, 'getBillAllRoom']);
-    Route::post('createAllBill/{motelId}', [BillController::class, 'createAllBill']);
-    Route::post('createSomeBill', [BillController::class, 'createSomeBill']);
-    Route::post('updateBillNum', [BillController::class, 'updateBillNum']);
-    Route::post('updateBillStatus', [BillController::class, 'updateBillStatus']);
-    Route::get('sendNotiBill/{bill_id}', [BillController::class, 'sendNotiBill']);
-    Route::get('sendAllNotiBill/{motel_id}', [BillController::class, 'sendAllNotiBill']);
-    Route::get('getBillOwnRoom', [BillController::class, 'getBillOwnRoom']);
-    Route::post('sendBillYes', [BillController::class, 'sendBillYes']);
-    Route::post('sendBillError', [BillController::class, 'sendBillError']);
-    //motelImgController
-    Route::get('getMotelImgs/{motelId}', [MotelImgController::class, 'getMotelImgs']);
-    //imgDetailcontroller
+        //postController
+        Route::get('getPostConpound', [PostController::class, 'getPostConpound']);
+        Route::post('createPostUser', [PostController::class, 'createPostUser']);
+        Route::post('changeStatusConpound', [PostController::class, 'changeStatusConpound']);
+        Route::post('deleteConpound', [PostController::class, 'deleteConpound']);
+        Route::post('sendIntoNoti', [PostController::class, 'sendIntoNoti']);
+        Route::post('sendIntoNotiRoom', [PostController::class, 'sendIntoNotiRoom']);
+        Route::post('changeStatusPost', [PostController::class, 'changeStatusPost']);
+        Route::get('getPostMotel/{motelId}', [PostController::class, 'getPostMotel']);
+        Route::post('createPostMotel', [PostController::class, 'createPostMotel']);
+        //billController
+        Route::get('getBillAllRoom/{motelId}', [BillController::class, 'getBillAllRoom']);
+        Route::post('createAllBill/{motelId}', [BillController::class, 'createAllBill']);
+        Route::post('createSomeBill', [BillController::class, 'createSomeBill']);
+        Route::post('updateBillNum', [BillController::class, 'updateBillNum']);
+        Route::post('updateBillStatus', [BillController::class, 'updateBillStatus']);
+        Route::get('sendNotiBill/{bill_id}', [BillController::class, 'sendNotiBill']);
+        Route::get('sendAllNotiBill/{motel_id}', [BillController::class, 'sendAllNotiBill']);
+        Route::get('getBillOwnRoom', [BillController::class, 'getBillOwnRoom']);
+        Route::post('sendBillYes', [BillController::class, 'sendBillYes']);
+        Route::post('sendBillError', [BillController::class, 'sendBillError']);
+        //motelImgController
+        Route::get('getMotelImgs/{motelId}', [MotelImgController::class, 'getMotelImgs']);
+        //imgDetailcontroller
 
-    //commentController
-    Route::post('createComment', [CommentController::class, 'createComment']);
-    //uploadController
-    Route::post('uploadImg', [UploadController::class, 'uploadImg']);
-    Route::post('uploadRoomImg', [UploadController::class, 'uploadRoomImg']);
-  }
+        //commentController
+        Route::post('createComment', [CommentController::class, 'createComment']);
+        //uploadController
+        Route::post('uploadImg', [UploadController::class, 'uploadImg']);
+        Route::post('uploadRoomImg', [UploadController::class, 'uploadRoomImg']);
+    }
 );
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-  return response()->json([
-    'user' => $request->user()
-  ]);
+    return response()->json([
+        'user' => $request->user()
+    ]);
 });
 
 Route::get('getNotiRoom/{roomId}', [RoomController::class, 'getNotiRoom']);
@@ -159,8 +160,7 @@ Route::get('getPost', [PostController::class, 'getPost']);
 Route::post('searchPost', [PostController::class, 'searchPost']);
 
 //user controller
-Route::get('getAllUser',[UserController::class,'getAllUser']) ;
+Route::get('getAllUser', [UserController::class, 'getAllUser']);
 //motel controller
-Route::get('getAllMotel',[MotelController::class,'getAllMotel']);
-Route::get('adminGetMotel/{motelId}',[MotelController::class,'adminGetMotel']);
-
+Route::get('getAllMotel', [MotelController::class, 'getAllMotel']);
+Route::get('adminGetMotel/{motelId}', [MotelController::class, 'adminGetMotel']);

@@ -71,7 +71,88 @@ class UserController extends Controller
             'user' => $user
         ]);
     }
+        //register new motel user role
+    public function motelRegisterOne(Request $request)
+    {
+        $user = $request->user();
+        $motel = json_decode($request->motel);
+        $motel_imgs = json_decode($request->motel_img);
+        $motel_equip = json_decode($request->motel_equip);
+        $motel_equips = json_decode($request->motel_equips);
+        $room_types = json_decode($request->room_types);
+        //motel_img
+        $motel_img_num = $request->motel_img_num;
+        $motel_equip_num = $request->motel_equip_num;
+        $motel_equips_num = $request->motel_equips_num;
+        //check email
+        DB::transaction(function () use($request ,$user, $motel, $motel_imgs , $motel_equip, $motel_equips, $room_types , $motel_img_num, $motel_equip_num, $motel_equips_num) {
+            //create motel
+            $motels = $user->motel()->create([
+                'name' => $motel->names,
+                'phone_number' => $motel->phone_number,
+                'address' => $motel->address,
+                'latitude' => $motel->latitude,
+                'longitude' => $motel->longitude,
+                'closed' => $this->tohave($motel->closed),
+                'open' => $this->tohave($motel->open),
+                'camera' => $this->toInterger($motel->camera),
+                'parking' => $motel->parking,
+                'deposit' => $motel->deposit,
+                'elec_cost' => $this->tohave($motel->elec_cost),
+                'water_cost' => $this->tohave($motel->water_cost),
+                'people_cost' => $this->tohave($motel->people_cost),
+                'content' => $motel->content,
+                'auto_post' => $this->toInterger($motel->auto_post),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+            //create motel_imgs
+            $public_img = $motels->motel_imgs()->create($this->createMotelImgs($motel_imgs));
+            $motel_equip1 = $motels->motel_imgs()->create($this->createMotelImgs($motel_equip));
+            $motel_equip2 = $motels->motel_imgs()->create($this->createMotelImgs($motel_equips));
+            //create img_details
+            $pfname = 'motel_img';
+            $this->storeImgDetail($pfname, $motel_img_num, $public_img, $request);
+            $pfname = 'motel_equip';
+            $this->storeImgDetail($pfname, $motel_equip_num, $motel_equip1, $request);
+            $pfname = 'motel_equips';
+            $this->storeImgDetail($pfname, $motel_equips_num, $motel_equip2, $request);
 
+            //--------------------------
+            //create room_types
+            $a = count($room_types);
+            $filename = 'room';
+            $phong = 1;
+            for ($i = 0; $i < $a; $i++) {
+                $room_typ = $motels->room_types()->create($this->dataRoomType($room_types[$i]));
+                $room_num = $room_types[$i]->room_num;
+                $this->createRooms($room_num, $room_typ, $phong);
+                $phong += $room_num;
+                $fname = $filename . $i;
+                $num = $request->input($fname . '_num');
+                $this->storeImgDetail1($fname, $num, $room_typ, $request);
+                if ($motel->auto_post) {
+                    $room_typ->posts()->create([
+                        'title' => $motel->names,
+                        'room_id' => null,
+                        'conpound_content' => '',
+                        'content' => '',
+                        'status' => 1,
+                        'post_type_id' => 1
+                    ]);
+                }
+            }
+        });
+
+        //create posts
+
+
+        return response()->json([
+            'statusCode' => 1,
+            'lat' => $motel->latitude,
+            'log' => $motel->longitude,
+        ]);
+    }
     //register new motel user role
     public function motelRegister(Request $request)
     {

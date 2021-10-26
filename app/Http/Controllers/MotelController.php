@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class MotelController extends Controller
 {
+
     //get motels for motel
     public function getMotels(Request $request)
     {
