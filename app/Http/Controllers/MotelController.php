@@ -130,7 +130,7 @@ class MotelController extends Controller
         $motel = Motel::find($request->motelId);
         $motelRelation = $motel->loadMissing('user'); //get motel-user
         $roomTypes = $motel->room_types;
-        $roomTypeRelation = $roomTypes->loadMissing('had_rooms.latest_tenant.tenant_users.user');
+        $roomTypeRelation = $roomTypes->loadMissing('had_rooms.latest_tenant.tenant_users.user')->loadMissing('rooms');
         $roomTypeImgRelation = $roomTypes->loadMissing('img_details');
         $motelImgs = $motel->motel_imgs;
         $publicMotelImgRelation = $motelImgs->loadMissing('img_details');
