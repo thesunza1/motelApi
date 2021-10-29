@@ -13,4 +13,8 @@ class TenantRoomEquip extends Model
     public function tenant() {
         return $this->belongsTo(Tenant::class);
     }
+
+    public function img_details() {
+        return $this->hasMany(ImgDetail::class);
+    }
 }

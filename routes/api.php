@@ -13,15 +13,12 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\NotiController;
 use App\Http\Controllers\NotiTypeController;
 use App\Http\Controllers\PostController;
-use Database\Seeders\UserSeeder;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoomTypeController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\TenantRoomEquipController;
 use App\Http\Controllers\TenantUserController;
 use App\Http\Controllers\UploadController;
-use App\Models\TenantRoomEquip;
-use App\Models\User;
 use Illuminate\Routing\Router;
 
 /*
