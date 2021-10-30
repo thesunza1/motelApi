@@ -19,6 +19,7 @@ use App\Http\Controllers\TenantController;
 use App\Http\Controllers\TenantRoomEquipController;
 use App\Http\Controllers\TenantUserController;
 use App\Http\Controllers\UploadController;
+use App\Models\TenantRoomEquip;
 use Illuminate\Routing\Router;
 
 /*
@@ -146,6 +147,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     ]);
 });
 
+Route::post('uploadImgTenantRoomEquip', [TenantRoomEquipController::class, 'uploadImgTenantRoomEquip']);
 Route::get('getNotiRoom/{roomId}', [RoomController::class, 'getNotiRoom']);
 Route::get('image/{filename}', [ImgDetailController::class, 'image']);
 Route::get('detailPost/{post_id}', [PostController::class, 'detailPost']);

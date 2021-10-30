@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 use App\Models\TenantUser;
 use Carbon\Carbon;
 use App\Models\TenantRoomEquip;
+use Illuminate\Support\Str;
+
+use function PHPUnit\Framework\fileExists;
 
 class TenantRoomEquipController extends Controller
 {
@@ -30,7 +33,7 @@ class TenantRoomEquipController extends Controller
         $equipId = $request->equip_id;
         $tenant = TenantRoomEquip::find($equipId)->tenant;
         $tenant->eq_status = 0;
-        $tenant->save() ;
+        $tenant->save();
         TenantRoomEquip::find($equipId)->delete();
         return response()->json([
             'statusCode' => 1,
@@ -41,16 +44,16 @@ class TenantRoomEquipController extends Controller
         $userId = $request->user()->id;
         $tenant_user = TenantUser::where('user_id', $userId)->latest()->first();
         $tenant = $tenant_user->tenant;
-        $tenant->eq_status= 0 ;
-        $tenant->save() ;
+        $tenant->eq_status = 0;
+        $tenant->save();
         $oldLen = count($tenant->tenant_room_equips);
         $newLen = $request->equip_num;
         $newEquips = $request->equips;
 
         $room = $tenant->room;
         $motelUser = $room->room_type->motel->user;
-        $motel= $room->room_type->motel;
-        $title  = ' Xác nhận phòng ' . $room->name . ' Trọ '.$motel->name;
+        $motel = $room->room_type->motel;
+        $title  = ' Xác nhận phòng ' . $room->name . ' Trọ ' . $motel->name;
         $sender_id = $userId;
         $receiver_id = $motelUser->id;
         $content = 'Xác nhận tình trạng thiết bị phòng!';
@@ -73,10 +76,48 @@ class TenantRoomEquipController extends Controller
                 }
             }
         });
-        $this->sendNoti($title,$sender_id,$receiver_id,$content,$noti_type_id);
+        $this->sendNoti($title, $sender_id, $receiver_id, $content, $noti_type_id);
         return response()->json([
             'statusCode' => 1,
             // 'new_equips' => $newEquips[0]['content'],
+        ]);
+    }
+    public function uploadImgTenantRoomEquip(Request $request)
+    {
+        $imgs = $request->files;
+        $tenantRoomEquipId = $request->tenantRoomEquipId;
+
+        $tenantRoomEquip = TenantRoomEquip::find($tenantRoomEquipId);
+        $imgDetails = $tenantRoomEquip->img_details;
+        //unlink old file  delete img in db
+        if (count($imgDetails) > 0) {
+            foreach ($imgDetails as $ids) {
+                $img = public_path('image/' . $ids->img);
+                if (file_exists($img)) {
+                    unlink($img);
+                }
+            }
+            $tenantRoomEquip->img_details()->delete();
+        }
+        //add new imgs and insert to db
+        $time = Carbon::now();
+        foreach($imgs as $img) {
+            $ran = Str::random(20);
+            $fileName = $time->timestamp.$ran . '.' . $img->getClientOriginalExtension() ;
+            $data = [
+                'room_type_id' =>null ,
+                'motel_img_id' => null ,
+                'img' => $fileName,
+                'created_at' => $time,
+                'updated_at' => $time,
+            ];
+            $tenantRoomEquip->img_details()->create($data) ;
+            $img->move('image', $fileName);
+        }
+        return response()->json([
+            'file' => $fileName,
+            'statusCode' => 1,
+            'id' => $tenantRoomEquipId,
         ]);
     }
 
