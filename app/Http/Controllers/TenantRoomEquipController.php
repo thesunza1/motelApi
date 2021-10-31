@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TenantRoomEquipResource;
 use App\Models\Noti;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
@@ -17,9 +18,14 @@ class TenantRoomEquipController extends Controller
 {
     public function getTenantRoomEquips(Request $request)
     {
-        $userId = $request->user()->id;
-        $tenant_user = TenantUser::where('user_id', $userId)->latest()->first();
-        $equips = TenantRoomEquip::where('tenant_id', $tenant_user->tenant_id)->get();
+        // $userId = $request->user()->id;
+        $userId = $request->user();
+        // $tenant_user = TenantUser::where('user_id', $userId)->latest()->first();
+        // $equips = TenantRoomEquip::where('tenant_id', $tenant_user->tenant_id)->get();
+        $tenant = $userId->latest_tenant_user->tenant;
+        $equip = $tenant->tenant_room_equips;
+        $eqRela = $equip->loadMissing('img_details');
+        $equips = TenantRoomEquipResource::collection($eqRela) ;
         $equip_num = count($equips);
 
         return response()->json([
@@ -34,6 +40,13 @@ class TenantRoomEquipController extends Controller
         $tenant = TenantRoomEquip::find($equipId)->tenant;
         $tenant->eq_status = 0;
         $tenant->save();
+        $imgDetails = TenantRoomEquip::find($equipId)->img_details ;
+        foreach($imgDetails as $imgDetail ) {
+            $img = public_path('image/'.$imgDetail->img) ;
+            if(file_exists($img)) {
+                unlink($img) ;
+            }
+        }
         TenantRoomEquip::find($equipId)->delete();
         return response()->json([
             'statusCode' => 1,
@@ -86,7 +99,11 @@ class TenantRoomEquipController extends Controller
     {
         $imgs = $request->files;
         $tenantRoomEquipId = $request->tenantRoomEquipId;
-
+        if($tenantRoomEquipId == -1 ) {
+            return response()->json([
+                'statusCode' => 0 ,
+            ]);
+        }
         $tenantRoomEquip = TenantRoomEquip::find($tenantRoomEquipId);
         $imgDetails = $tenantRoomEquip->img_details;
         //unlink old file  delete img in db
@@ -114,8 +131,10 @@ class TenantRoomEquipController extends Controller
             $tenantRoomEquip->img_details()->create($data) ;
             $img->move('image', $fileName);
         }
+        $tenantRoomEquip->tenant()->update([
+            'eq_status' => 0 ,
+        ]);
         return response()->json([
-            'file' => $fileName,
             'statusCode' => 1,
             'id' => $tenantRoomEquipId,
         ]);

@@ -14,11 +14,13 @@ class TenantRoomEquipResource extends JsonResource
      */
     public function toArray($request)
     {
+        $img_details = $this->whenLoaded('img_details');
         return [
             'id' => $this->id,
             'tenant_id' => $this->tenant_id,
             'name' => $this->name,
             'content' => $this->content,
+            'img_details' => ImgDetailResource::collection($img_details)
         ];
     }
 }

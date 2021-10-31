@@ -164,7 +164,7 @@ class RoomController extends Controller
     //get: get room infor
     public function getRoom(Request $request) {
         $room = Room::find($request->roomId) ;
-        $roomRelation = $room->loadMissing('latest_tenant.tenant_users.user')->loadMissing('room_type.motel.user')->loadMissing('latest_tenant.tenant_room_equips');
+        $roomRelation = $room->loadMissing('latest_tenant.tenant_users.user')->loadMissing('room_type.motel.user')->loadMissing('latest_tenant.tenant_room_equips.img_details');
         $roomArr = new RoomResource($roomRelation) ;
         return response()->json([
             'statusCode' => 1 ,
