@@ -41,6 +41,8 @@ class MotelResource extends JsonResource
             'motel_imgs' => MotelImgResource::collection($motel_imgs),
             'user_id' =>$this->user_id ,
             'user' => new UserResource($user),
+            'created_at' => $this->created_at ,
+            'updated_at' => $this->updated_at ,
         ];
     }
 }

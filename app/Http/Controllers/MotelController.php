@@ -111,12 +111,13 @@ class MotelController extends Controller
     {
         $email = $request->email;
 
-        $motel = User::where('email',$email)->first()->motel;
+        $motel = User::where('email',$email)->first()->motels;
         if ($motel != null) {
-            $motel->user;
+            $motelArr = $motel->loadMissing('user');
+            $motels = MotelResource::collection($motelArr);
             return response()->json([
                 'statusCode' => 1,
-                'motel' => $motel,
+                'motel' => $motels,
             ]);
         } else {
             return response()->json([
