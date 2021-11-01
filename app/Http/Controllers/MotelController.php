@@ -7,6 +7,7 @@ use App\Models\Motel;
 use App\Http\Resources\MotelResource;
 use App\Http\Resources\RoomTypeResource;
 use App\Models\MotelImg;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -106,7 +107,25 @@ class MotelController extends Controller
             'motels' => $motels,
         ]);
     }
-
+    public function getMapMotels(Request $request)
+    {
+        $motels = Motel::with('user')->get();
+        return response()->json([
+            'statusCode' => 1,
+            'motels' => $motels,
+        ]);
+    }
+    public function getPostMotels(Request $request) {
+        $motel = Motel::find($request->motelId)->room_types()->pluck('id') ;
+        $posts = Post::whereIn('room_type_id', $motel)->orderByDesc('updated_at') ;
+        $postsPaginator = $posts->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
+            ->with('room_type.motel.user')->with('room.room_type.motel.user')
+            ->with('room.latest_tenant.tenant_users.user')->paginate(9);
+        return response()->json([
+            'statusCode' => 1,
+            'posts' => $postsPaginator,
+        ]);
+    }
     public function findMotel(Request $request)
     {
         $email = $request->email;
