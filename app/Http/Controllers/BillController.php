@@ -213,7 +213,7 @@ class BillController extends Controller
                     'title' => 'thanh toán tiền phòng ',
                     'sender_id' => $userId,
                     'receiver_id' => $tenantUser->user_id,
-                    'content' => "thanh toán bill từ ngày : $bill->date_begin tới ngày $bill->date_end",
+                    'content' => "thanh toán bill từ  :". substr($bill->date_begin,0,10) ." tới  ". substr($bill->date_end,0,10) ,
                     'noti_type_id' => 4,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
@@ -269,8 +269,9 @@ class BillController extends Controller
         $userId = $request->user()->id ;
         $content= $request->content ;
         $room = Room::find($request->room_id);
+        $motel= $room->room_type->motel;
         $bill = $request->bill;
-        $title = "phòng $room->name bill " .$bill['date_begin'] . '-'.$bill['date_end'];
+        $title = "phòng $room->name , trọ $motel->name bill " . substr($bill['date_begin'],0,10) . ' đến '. substr($bill['date_end'],0,10);
         $user = User::find($userId) ;
         $receiver = $user->latest_tenant_user->tenant->room->room_type->motel->user ;
         $receiver_id = $receiver->id ;
@@ -290,7 +291,7 @@ class BillController extends Controller
         $user = User::find($userId) ;
         $bill = $request->bill;
         $motel= $user->latest_tenant_user->tenant->room->room_type->motel;
-        $title = "phòng $room->name bill ".' Trọ '. $motel->name .' ngày ' .$bill['date_begin'] . '-'.$bill['date_end'];
+        $title = "phòng $room->name bill ".' Trọ '. $motel->name .' ngày ' . substr($bill['date_begin'],0,10) . ' đến '. substr($bill['date_end'],0,10);
         $receiver = $motel->user ;
         $receiver_id = $receiver->id ;
 

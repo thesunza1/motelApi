@@ -30,7 +30,7 @@ class NotiController extends Controller
             $motel = $room->room_type->motel;
             $motelName = $motel->name;
             $noti_type_id = 3;
-            $title = 'mời vào trọ ' . $motelName;
+            $title = 'Mời vào trọ ' . $motelName .'. Phòng ' . $room->name;
             $noii = Noti::create([
                 'title' => $title,
                 'receiver_id' => $receiverId,
