@@ -21,10 +21,13 @@ class RoomTypeController extends Controller
         $tenantUser = TenantUser::where('user_id', $userId)->first();
         $tenant_id = $tenantUser->tenant_id;
         $roomType = Tenant::find($tenant_id)->room->room_type;
-        $roomType->motel->user;
+        $roomTypeArr= $roomType->loadMissing('motel.user')->loadMissing('motel.motel_imgs.img_details');
+        $resRoomTypeArr = new RoomTypeResource($roomTypeArr) ;
+        // $roomType->motel->user;
         return response()->json([
             'statusCode' => 1,
-            'roomType' => $roomType,
+            // 'roomType' => $roomType,
+            'roomType' => $resRoomTypeArr,
         ]);
     }
 
