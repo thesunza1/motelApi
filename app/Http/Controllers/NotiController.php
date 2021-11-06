@@ -130,14 +130,18 @@ class NotiController extends Controller
             }
 
             $arrContent =
-                'trọ : ' . $motel->id . '-' . $motel->name . '<br/>' .
+                'Trọ : ' .  $motel->name . '<br/>' .
+                'Chủ trọ : ' .  $motel->user->name . '<br/>' .
+                'Email chủ trọ : ' .  $motel->user->email . '<br/>' .
                 $content . '<br/>';
             $title .= $motel->name;
         } else if ($type == 2) {
             //motelId
             $motel = Motel::find($request->motelId);
             $arrContent =
-                'trọ : ' . $motel->id . '-' . $motel->name . '<br/>' .
+                'trọ : '  . $motel->name . '<br/>' .
+                'Chủ trọ : ' .  $motel->user->name . '<br/>' .
+                'Email chủ trọ : ' .  $motel->user->email . '<br/>' .
                 $content . '<br/>';
 
             $title .= $motel->name;
@@ -145,7 +149,9 @@ class NotiController extends Controller
             //roomTypeId
             $motel = RoomType::find($request->roomTypeId)->motel;
             $arrContent =
-                'trọ : ' . $motel->id . '-' . $motel->name . '<br/>' .
+                'trọ : ' . $motel->name . '<br/>' .
+                'Chủ trọ : ' .  $motel->user->name . '<br/>' .
+                'Email chủ trọ : ' .  $motel->user->email . '<br/>' .
                 $content . '<br/>';
             $title .= $motel->name;
         }
