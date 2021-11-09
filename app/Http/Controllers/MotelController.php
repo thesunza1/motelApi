@@ -109,15 +109,16 @@ class MotelController extends Controller
     }
     public function getMapMotels(Request $request)
     {
-        $motels = Motel::with('user')->get();
+        $motels = Motel::with('user')->with('motel_imgs.img_details')->get();
         return response()->json([
             'statusCode' => 1,
             'motels' => $motels,
         ]);
     }
-    public function getPostMotels(Request $request) {
-        $motel = Motel::find($request->motelId)->room_types()->pluck('id') ;
-        $posts = Post::whereIn('room_type_id', $motel)->orderByDesc('updated_at') ;
+    public function getPostMotels(Request $request)
+    {
+        $motel = Motel::find($request->motelId)->room_types()->pluck('id');
+        $posts = Post::whereIn('room_type_id', $motel)->orderByDesc('updated_at');
         $postsPaginator = $posts->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
             ->with('room_type.motel.user')->with('room.room_type.motel.user')
             ->with('room.latest_tenant.tenant_users.user')->paginate(9);
@@ -130,7 +131,7 @@ class MotelController extends Controller
     {
         $email = $request->email;
 
-        $motel = User::where('email',$email)->first()->motels;
+        $motel = User::where('email', $email)->first()->motels;
         if ($motel != null) {
             $motelArr = $motel->loadMissing('user');
             $motels = MotelResource::collection($motelArr);
