@@ -48,6 +48,7 @@ class UserController extends Controller
     public function userRegister(Request $request)
     {
         $email = $request->email . '@gmail.com';
+        $roleId = $request->roleId;
         // $date = DateTime::createFromFormat('Y-m-d H:i:s' , $request->date . ' 00:00:00');
         $checkemail = $this->emailCheck($email);
         if ($checkemail == 1) {
@@ -59,7 +60,7 @@ class UserController extends Controller
             'name' => $request->names,
             'email' => $email,
             'password' => Hash::make($request->password),
-            'role_id' => 1,
+            'role_id' => $roleId,
             'sex' => $request->sex,
             'address' => $request->address,
             'birth_date' => $request->date,

@@ -151,6 +151,7 @@ Route::get('getNotiRoom/{roomId}', [RoomController::class, 'getNotiRoom']);
 Route::get('image/{filename}', [ImgDetailController::class, 'image']);
 Route::get('detailPost/{post_id}', [PostController::class, 'detailPost']);
 Route::get('getMapMotels',[MotelController::class , 'getMapMotels']);
+Route::post('findTinh',[MotelController::class , 'findTinh']);
 Route::post('getPostMotels',[MotelController::class , 'getPostMotels']);
 
 Route::get('getAllComment/{post_id}', [CommentController::class, 'getAllComment']);

@@ -21,12 +21,11 @@ class PostController extends Controller
     {
         $userId = $request->user()->id;
         $room = TenantUser::where('user_id', $userId)->first()->tenant->room;
-        $roomId = $room->id ;
-        $posth = count($room->posts) ;
-        if($posth > 0 ) {
+        $roomId = $room->id;
+        $posth = count($room->posts);
+        if ($posth > 0) {
             return response()->json([
-                'statusCode' => 0
-                ,'posts' => $posth ,
+                'statusCode' => 0, 'posts' => $posth,
             ]);
         }
         $title = ' tìm người ở ghép ';
@@ -201,6 +200,11 @@ class PostController extends Controller
                         }
                     }
                 })
+                ->whereBetween('cost', [$price_min, $price_max])
+                ->whereBetween('area', [$area_min, $area_max])
+                ->where('male', $this->toSex('male', $sex))
+                ->where('female', $this->toSex('female', $sex))
+                ->where('everyone', $this->toSex('everyone', $sex))
                 ->select('room_types.id as room_type_id')->get();
 
             $roMotelArr = [];
@@ -261,7 +265,7 @@ class PostController extends Controller
         $statusPost = $post->status;
 
         $post->status = ($statusPost == 0) ? 1 : 0;
-        $post->updated_at = Carbon::now() ;
+        $post->updated_at = Carbon::now();
         $post->save();
 
         return response()->json([
@@ -327,11 +331,11 @@ class PostController extends Controller
         if ($post != null) {
             if ($numRoom == 0) {
                 $post->status = 0;
-                $post->updated_at = Carbon::now() ;
+                $post->updated_at = Carbon::now();
                 $post->save();
             } else {
                 $post->status = 1;
-                $post->updated_at = Carbon::now() ;
+                $post->updated_at = Carbon::now();
                 $post->save();
             }
         }

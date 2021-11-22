@@ -115,6 +115,21 @@ class MotelController extends Controller
             'motels' => $motels,
         ]);
     }
+    public function findTinh(Request $request)
+    {
+        $latB = $request->latBegin;
+        $latE = $request->latEnd;
+        $longB = $request->longBegin;
+        $longE = $request->longEnd;
+
+        $motels = Motel::whereBetween('latitude', [$latB, $latE])
+            ->whereBetween('longitude', [$longB, $longE])
+            ->with('user')->with('motel_imgs.img_details')->get();
+        return response()->json([
+            'statusCode' => 1,
+            'motels' => $motels,
+        ]);
+    }
     public function getPostMotels(Request $request)
     {
         $motel = Motel::find($request->motelId)->room_types()->pluck('id');
