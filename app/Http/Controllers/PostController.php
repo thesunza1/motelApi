@@ -157,61 +157,39 @@ class PostController extends Controller
         $area_min = $request->area_min;
         // $test = DB::table('posts')->;
         if ($post_type == 1) {
-            $room_types = DB::table('room_types');
-            // ->whereBetween('cost', [$price_min, $price_max])
-            // ->whereBetween('area', [$area_min, $area_max])
-            // ->where('male', $this->toSex('male', $sex))
-            // ->where('female', $this->toSex('female', $sex))
-            // ->where('everyone', $this->toSex('everyone', $sex));
-            // $roMotel =  $room_types->join('motels', function ($join) use ($address, $search, $arrAddress, $arrSearch) {
-            //     $join->on('room_types.motel_id', '=', 'motels.id')
-            //         ->where('motels.address', 'like', '%' . $address . '%')
-            //         ->where('motels.name', 'like', '%' . $search . '%')
-            //         ->orwhere(function ($query) use ($arrSearch) {
-            //             if (count($arrSearch) > 1) {
-            //                 foreach ($arrSearch as $val) {
-            //                     $query->orwhere('motels.name', 'like', '%'.$val.'%');
-            //                 }
-            //             }
-            //         })
-            //         ->orwhere(function ($query) use ($arrAddress) {
-            //             if (count($arrAddress) > 1) {
-            //                 foreach ($arrAddress as $val) {
-            //                     $query->orwhere('motels.addresss', 'like', '%'.$val.'%');
-            //                 }
-            //             }
-            //         });
-            // })
-            //     ->select('room_types.id as room_type_id')->get();
-            $roMotel = $room_types->join('motels', 'room_types.motel_id', '=', 'motels.id')
-                ->where('motels.address', 'like', '%' . $address . '%')
-                ->where('motels.name', 'like', '%' . $search . '%')
+            $room_types = DB::table('room_types')
+                ->whereBetween('cost', [$price_min, $price_max])
+                ->whereBetween('area', [$area_min, $area_max])
+                ->where('male', $this->toSex('male', $sex))
+                ->where('female', $this->toSex('female', $sex))
+                ->where('everyone', $this->toSex('everyone', $sex));
+
+            $motelSearch = Motel::where('address', 'like', '%' . $address . '%')
+                ->where('name', 'like', '%' . $search . '%')
                 ->orwhere(function ($query) use ($arrSearch) {
                     if (count($arrSearch) > 1) {
                         foreach ($arrSearch as $val) {
-                            $query->orwhere('motels.name', 'like', '%' . $val . '%');
+                            $query->orwhere('name', 'like', '%' . $val . '%');
                         }
                     }
                 })
                 ->orwhere(function ($query) use ($arrAddress) {
                     if (count($arrAddress) > 1) {
                         foreach ($arrAddress as $val) {
-                            $query->orwhere('motels.address', 'like', '%' . $val . '%');
+                            $query->orwhere('address', 'like', '%' . $val . '%');
                         }
                     }
-                })
-                ->whereBetween('cost', [$price_min, $price_max])
-                ->whereBetween('area', [$area_min, $area_max])
-                ->where('male', $this->toSex('male', $sex))
-                ->where('female', $this->toSex('female', $sex))
-                ->where('everyone', $this->toSex('everyone', $sex))
-                ->select('room_types.id as room_type_id')->get();
+                });
+            $roMotel = $room_types->joinSub($motelSearch, 'motels', function ($join) {
+                $join->on('room_types.motel_id', '=', 'motels.id');
+            })->select('room_types.id as room_type_id')->orderBy('motel_id')->get();
+
 
             $roMotelArr = [];
             foreach ($roMotel as $rType) {
                 array_push($roMotelArr, $rType->room_type_id);
             }
-            $post = Post::whereIn('room_type_id', $roMotelArr);
+            $post = Post::whereIn('room_type_id', $roMotelArr)->where('status', '=', 1)->orderByDesc('updated_at');
         } else {
             $room_types = DB::table('room_types')
                 ->whereBetween('cost', [$price_min, $price_max])
@@ -219,6 +197,23 @@ class PostController extends Controller
                 ->where('male', $this->toSex('male', $sex))
                 ->where('female', $this->toSex('female', $sex))
                 ->where('everyone', $this->toSex('everyone', $sex));
+
+            // $motelSearch = Motel::where('address', 'like', '%' . $address . '%')
+            //     ->where('name', 'like', '%' . $search . '%')
+            //     ->orwhere(function ($query) use ($arrSearch) {
+            //         if (count($arrSearch) > 1) {
+            //             foreach ($arrSearch as $val) {
+            //                 $query->orwhere('name', 'like', '%' . $val . '%');
+            //             }
+            //         }
+            //     })
+            //     ->orwhere(function ($query) use ($arrAddress) {
+            //         if (count($arrAddress) > 1) {
+            //             foreach ($arrAddress as $val) {
+            //                 $query->orwhere('address', 'like', '%' . $val . '%');
+            //             }
+            //         }
+            //     });
             $roMotel =  $room_types->join('motels', function ($join) use ($address, $search, $arrSearch, $arrAddress) {
                 $join->on('room_types.motel_id', '=', 'motels.id')
                     ->where('motels.address', 'like', '%' . $address . '%')
@@ -245,7 +240,7 @@ class PostController extends Controller
             foreach ($roMotel as $rType) {
                 array_push($roMotelArr, $rType->id);
             }
-            $post = Post::whereIn('room_id', $roMotelArr);
+            $post = Post::whereIn('room_id', $roMotelArr)->where('status', '=', 1)->orderByDesc('updated_at');
         }
         $postarr = $post->with('room_type.first_img_detail')->with('room.room_type.first_img_detail')
             ->with('room_type.motel.user')->with('room.room_type.motel.user')

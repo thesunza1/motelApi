@@ -109,7 +109,7 @@ class MotelController extends Controller
     }
     public function getMapMotels(Request $request)
     {
-        $motels = Motel::with('user')->with('motel_imgs.img_details')->get();
+        $motels = Motel::orderByDesc('created_at')->with('user')->with('motel_imgs.img_details')->get();
         return response()->json([
             'statusCode' => 1,
             'motels' => $motels,
