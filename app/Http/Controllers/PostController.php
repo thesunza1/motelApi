@@ -108,13 +108,13 @@ class PostController extends Controller
     }
     public function sendIntoNoti(Request $request)
     {
-        $title = 'muốn vào phòng trọ';
+        $title = 'Muốn vào phòng trọ';
         $content = '';
         $user = User::find($request->user()->id);
-        $content .= 'phòng muốn vào : ' . implode(", ", $request->ListRooms) . '<br>';
-        $content .= 'họ tên: ' . $user->name . '<br/>';
-        $content .= ' điện thoại: ' . $user->phone_number . '<br/>';
-        $content .= ' nghề: ' . $user->job . '<br/>';
+        $content .= 'Phòng muốn vào: ' . implode(", ", $request->ListRooms) . '<br>';
+        $content .= 'Họ tên: ' . $user->name . '<br/>';
+        $content .= 'Điện thoại: ' . $user->phone_number . '<br/>';
+        $content .= 'Nghề: ' . $user->job . '<br/>';
         $user = Post::find($request->postId)->room_type->motel->user;
         $senderId = $request->user()->id;
         $receiverId = $user->id;
@@ -125,12 +125,12 @@ class PostController extends Controller
     }
     public function sendIntoNotiRoom(Request $request)
     {
-        $title = 'muốn vào phòng trọ';
+        $title = 'Muốn vào phòng trọ';
         $content = '';
         $user = User::find($request->user()->id);
-        $content .= 'họ tên: ' . $user->name . '<br/>';
-        $content .= ' điện thoại: ' . $user->phone_number . '<br/>';
-        $content .= ' nghề: ' . $user->job . '<br/>';
+        $content .= 'Họ tên: ' . $user->name . '<br/>';
+        $content .= 'Điện thoại: ' . $user->phone_number . '<br/>';
+        $content .= 'Nghề: ' . $user->job . '<br/>';
         $users = Post::find($request->postId)->room->latest_tenant->tenant_users;
         $senderId = $request->user()->id;
         foreach ($users as $user) {
