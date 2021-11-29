@@ -52,10 +52,6 @@ class BillController extends Controller
 
                 foreach ($rooms as $room) {
                     $tenant = $room->latest_tenant; // get tenant moi nhat
-                    $numUser = count($tenant->tenant_users);
-                    if ($numUser >= 2) {
-                        $peopleCost *= $numUser;
-                    }
                     if ($tenant->num_status == 0) {
                         return [3, $room];
                     }
@@ -64,6 +60,7 @@ class BillController extends Controller
                     $waterBegin = $tenant->water_num;
                     $latest_bill = $tenant->latest_bill;
                     $dateEnd = Carbon::now();
+                    //set day to create bill for all room
                     $minDate = 0;
 
                     if ($latest_bill != null) {
@@ -127,10 +124,6 @@ class BillController extends Controller
                         continue;
                     }
                     $tenant = $room->latest_tenant; // get tenant moi nhat
-                    $numUser = count($tenant->tenant_users);
-                    if ($numUser >= 2) {
-                        $peopleCost *= $numUser;
-                    }
                     if ($tenant->num_status == 0) {
                         return [3, $room];
                     }
@@ -139,6 +132,7 @@ class BillController extends Controller
                     $waterBegin = $tenant->water_num;
                     $latest_bill = $tenant->latest_bill;
                     $dateEnd = Carbon::now();
+                    //set day to create bill for all room
                     $minDate = 0;
 
                     if ($latest_bill != null) {
