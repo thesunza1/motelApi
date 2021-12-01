@@ -124,6 +124,7 @@ class MotelController extends Controller
 
         $motels = Motel::whereBetween('latitude', [$latB, $latE])
             ->whereBetween('longitude', [$longB, $longE])
+            ->orderByDesc('created_at')
             ->with('user')->with('motel_imgs.img_details')->get();
         return response()->json([
             'statusCode' => 1,

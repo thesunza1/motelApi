@@ -108,14 +108,17 @@ class PostController extends Controller
     }
     public function sendIntoNoti(Request $request)
     {
-        $title = 'Muốn vào phòng trọ';
+        $title = 'Muốn vào trọ';
         $content = '';
         $user = User::find($request->user()->id);
         $content .= 'Phòng muốn vào: ' . implode(", ", $request->ListRooms) . '<br>';
         $content .= 'Họ tên: ' . $user->name . '<br/>';
         $content .= 'Điện thoại: ' . $user->phone_number . '<br/>';
         $content .= 'Nghề: ' . $user->job . '<br/>';
-        $user = Post::find($request->postId)->room_type->motel->user;
+        $motel = Post::find($request->postId)->room_type->motel;
+        $title .= ' ' . ucwords($motel->name);
+        // $user = Post::find($request->postId)->room_type->motel->user;
+        $user = $motel->user;
         $senderId = $request->user()->id;
         $receiverId = $user->id;
         NotiController::sendNotiChoose($title, $senderId, $receiverId, $content, 4, null, 0);
