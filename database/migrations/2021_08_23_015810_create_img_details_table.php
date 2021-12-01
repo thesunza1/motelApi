@@ -17,8 +17,10 @@ class CreateImgDetailsTable extends Migration
             $table->id();
             $table->bigInteger('motel_img_id',false,true)->nullable();
             $table->bigInteger('room_type_id',false,true)->nullable();
+            $table->bigInteger('tenant_room_equip_id',false,true)->nullable();
             $table->foreign('motel_img_id')->references('id')->on('motel_imgs')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('room_type_id')->references('id')->on('room_types')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('tenant_room_equip_id')->references('id')->on('tenant_room_equips')->onDelete('cascade')->onUpdate('cascade');
             $table->string('img');
             $table->timestamps();
         });
