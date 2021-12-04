@@ -20,6 +20,8 @@ class TenantRoomEquipResource extends JsonResource
             'tenant_id' => $this->tenant_id,
             'name' => $this->name,
             'content' => $this->content,
+            'status' => $this->status,
+            'created_at' => $this->created_at,
             'img_details' => ImgDetailResource::collection($img_details)
         ];
     }

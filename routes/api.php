@@ -100,9 +100,11 @@ Route::middleware(['auth:sanctum'])->group(
         Route::post('createRoomType', [RoomTypeController::class, 'createRoomType']);
         Route::post('deleteRoomType', [RoomTypeController::class, 'deleteRoomType']);
         //tenant room equip controller
+        Route::get('getAllTRE/{motelId}/{order?}/{form?}/{to?}',[TenantRoomEquipController::class,'getAllTRE']);
         Route::get('getTenantRoomEquips', [TenantRoomEquipController::class, 'getTenantRoomEquips']);
         Route::post('deleteTenantRoomEquip', [TenantRoomEquipController::class, 'deleteTenantRoomEquip']);
         Route::post('createTenantRoomEquips', [TenantRoomEquipController::class, 'createTenantRoomEquips']);
+        Route::post('tREStatus', [TenantRoomEquipController::class, 'tREStatus']);
         //tenant user controller
         Route::get('getTenantUsers/{tenantId}', [TenantUserController::class, 'getTenantUsers']);
         Route::get('getInfoShare', [TenantUserController::class, 'getInfoShare']);
@@ -150,9 +152,9 @@ Route::post('uploadImgTenantRoomEquip', [TenantRoomEquipController::class, 'uplo
 Route::get('getNotiRoom/{roomId}', [RoomController::class, 'getNotiRoom']);
 Route::get('image/{filename}', [ImgDetailController::class, 'image']);
 Route::get('detailPost/{post_id}', [PostController::class, 'detailPost']);
-Route::get('getMapMotels',[MotelController::class , 'getMapMotels']);
-Route::post('findTinh',[MotelController::class , 'findTinh']);
-Route::post('getPostMotels',[MotelController::class , 'getPostMotels']);
+Route::get('getMapMotels', [MotelController::class, 'getMapMotels']);
+Route::post('findTinh', [MotelController::class, 'findTinh']);
+Route::post('getPostMotels', [MotelController::class, 'getPostMotels']);
 
 Route::get('getAllComment/{post_id}', [CommentController::class, 'getAllComment']);
 
@@ -165,3 +167,5 @@ Route::get('getAllUser', [UserController::class, 'getAllUser']);
 //motel controller
 Route::get('getAllMotel', [MotelController::class, 'getAllMotel']);
 Route::get('adminGetMotel/{motelId}', [MotelController::class, 'adminGetMotel']);
+
+

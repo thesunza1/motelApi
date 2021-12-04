@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TenantResource;
 use App\Http\Resources\TenantRoomEquipResource;
+use App\Models\Motel;
 use App\Models\Noti;
+use App\Models\Room;
+use App\Models\RoomType;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -140,6 +144,33 @@ class TenantRoomEquipController extends Controller
         ]);
     }
 
+    //change status re
+    public function tREStatus(Request $request) {
+        $status= $request->status ;
+        $equipId = $request->id;
+
+        $eq = TenantRoomEquip::find($equipId);
+        $eq->status = $status ;
+        $eq->save() ;
+
+        return response()->json([
+            'statusCode' => 1,
+        ]);
+    }
+
+    public function getAllTRE(Request $request) {
+        $arrRoomType= RoomType::where('motel_id' , $request->motelId)->pluck('id')->toArray();
+        $lasTenant = Room::whereIn('room_type_id', $arrRoomType)->where('room_status_id',2)->pluck('id')->toArray();
+        $teant = Tenant::whereIn('room_id', $lasTenant )->where('status',0)->pluck('id')->toArray();
+        $tenantRE = TenantRoomEquip::whereIn('tenant_id',$teant)->where('status',0)->with('img_details')->get();
+
+        return response()->json([
+            'arrRoomType' => $arrRoomType,
+            'latestTenant' => $lasTenant,
+            'tenant' => $tenantRE,
+            'statusCode' => 1 ,
+        ]);
+    }
     public function sendNoti($title, $sender_id, $receiver_id, $content, $noti_type_id)
     {
         DB::transaction(function () use ($title, $sender_id, $receiver_id, $content, $noti_type_id) {
