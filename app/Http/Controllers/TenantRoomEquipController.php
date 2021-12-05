@@ -148,7 +148,6 @@ class TenantRoomEquipController extends Controller
     public function tREStatus(Request $request) {
         $status= $request->status ;
         $equipId = $request->id;
-
         $eq = TenantRoomEquip::find($equipId);
         $eq->status = $status ;
         $eq->save() ;
@@ -159,15 +158,34 @@ class TenantRoomEquipController extends Controller
     }
 
     public function getAllTRE(Request $request) {
+        $order = $request->order; //0 : desc , 1 : asc ;
+        $form = $request->from ; //0: none , dif ;
+        $to = $request->to ; //0: none , dif ;
+
+        //get arr: roomType , haveRoom , latest tenant;
         $arrRoomType= RoomType::where('motel_id' , $request->motelId)->pluck('id')->toArray();
         $lasTenant = Room::whereIn('room_type_id', $arrRoomType)->where('room_status_id',2)->pluck('id')->toArray();
-        $teant = Tenant::whereIn('room_id', $lasTenant )->where('status',0)->pluck('id')->toArray();
-        $tenantRE = TenantRoomEquip::whereIn('tenant_id',$teant)->where('status',0)->with('img_details')->get();
+        $tenant = Tenant::whereIn('room_id', $lasTenant )->where('status',0)->pluck('id')->toArray();
+        //get tenant room equip
+        $tenantRoomEquip = TenantRoomEquip::whereIn('tenant_id',$tenant);
+        //condition order ;
+        $line = 172;
+        if($order == 0 ) {
+            $tenantRoomEquip->orderByDesc('created_at');
+            $line = 175;
+        }
+        //from to
+        if($form != 0) {
+            $form = date($form) ;
+            $to = date($to) ;
+            $line = 181;
+            $tenantRoomEquip->whereBetween('created_at' , [$form , $to]);
+        }
+        $tenantRE = $tenantRoomEquip->with('img_details')->with('tenant.room.room_type')->get();
 
         return response()->json([
-            'arrRoomType' => $arrRoomType,
-            'latestTenant' => $lasTenant,
-            'tenant' => $tenantRE,
+            'tenantRE' => $tenantRE,
+            'line' => $line ,
             'statusCode' => 1 ,
         ]);
     }
