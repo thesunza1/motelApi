@@ -29,7 +29,7 @@ class TenantRoomEquipController extends Controller
         $tenant = $userId->latest_tenant_user->tenant;
         $equip = $tenant->tenant_room_equips;
         $eqRela = $equip->loadMissing('img_details');
-        $equips = TenantRoomEquipResource::collection($eqRela) ;
+        $equips = TenantRoomEquipResource::collection($eqRela);
         $equip_num = count($equips);
 
         return response()->json([
@@ -44,11 +44,11 @@ class TenantRoomEquipController extends Controller
         $tenant = TenantRoomEquip::find($equipId)->tenant;
         $tenant->eq_status = 0;
         $tenant->save();
-        $imgDetails = TenantRoomEquip::find($equipId)->img_details ;
-        foreach($imgDetails as $imgDetail ) {
-            $img = public_path('image/'.$imgDetail->img) ;
-            if(file_exists($img)) {
-                unlink($img) ;
+        $imgDetails = TenantRoomEquip::find($equipId)->img_details;
+        foreach ($imgDetails as $imgDetail) {
+            $img = public_path('image/' . $imgDetail->img);
+            if (file_exists($img)) {
+                unlink($img);
             }
         }
         TenantRoomEquip::find($equipId)->delete();
@@ -103,9 +103,9 @@ class TenantRoomEquipController extends Controller
     {
         $imgs = $request->files;
         $tenantRoomEquipId = $request->tenantRoomEquipId;
-        if($tenantRoomEquipId == -1 ) {
+        if ($tenantRoomEquipId == -1) {
             return response()->json([
-                'statusCode' => 0 ,
+                'statusCode' => 0,
             ]);
         }
         $tenantRoomEquip = TenantRoomEquip::find($tenantRoomEquipId);
@@ -122,21 +122,21 @@ class TenantRoomEquipController extends Controller
         }
         //add new imgs and insert to db
         $time = Carbon::now();
-        foreach($imgs as $img) {
+        foreach ($imgs as $img) {
             $ran = Str::random(20);
-            $fileName = $time->timestamp.$ran . '.' . $img->getClientOriginalExtension() ;
+            $fileName = $time->timestamp . $ran . '.' . $img->getClientOriginalExtension();
             $data = [
-                'room_type_id' =>null ,
-                'motel_img_id' => null ,
+                'room_type_id' => null,
+                'motel_img_id' => null,
                 'img' => $fileName,
                 'created_at' => $time,
                 'updated_at' => $time,
             ];
-            $tenantRoomEquip->img_details()->create($data) ;
+            $tenantRoomEquip->img_details()->create($data);
             $img->move('image', $fileName);
         }
         $tenantRoomEquip->tenant()->update([
-            'eq_status' => 0 ,
+            'eq_status' => 0,
         ]);
         return response()->json([
             'statusCode' => 1,
@@ -145,48 +145,71 @@ class TenantRoomEquipController extends Controller
     }
 
     //change status re
-    public function tREStatus(Request $request) {
-        $status= $request->status ;
+    public function tREStatus(Request $request)
+    {
+        $status = $request->status;
         $equipId = $request->id;
         $eq = TenantRoomEquip::find($equipId);
-        $eq->status = $status ;
-        $eq->save() ;
+        $eq->status = $status;
+        $eq->save();
 
         return response()->json([
             'statusCode' => 1,
         ]);
     }
 
-    public function getAllTRE(Request $request) {
+    public function getAllTRE(Request $request)
+    {
         $order = $request->order; //0 : desc , 1 : asc ;
-        $form = $request->from ; //0: none , dif ;
-        $to = $request->to ; //0: none , dif ;
+        $form = $request->from; //0: none , dif ;
+        $to = $request->to; //0: none , dif ;
 
         //get arr: roomType , haveRoom , latest tenant;
-        $arrRoomType= RoomType::where('motel_id' , $request->motelId)->pluck('id')->toArray();
-        $lasTenant = Room::whereIn('room_type_id', $arrRoomType)->where('room_status_id',2)->pluck('id')->toArray();
-        $tenant = Tenant::whereIn('room_id', $lasTenant )->where('status',0)->pluck('id')->toArray();
+        $arrRoomType = RoomType::where('motel_id', $request->motelId)->pluck('id')->toArray();
+        $lasTenant = Room::whereIn('room_type_id', $arrRoomType)->where('room_status_id', 2)->pluck('id')->toArray();
+        $tenant = Tenant::whereIn('room_id', $lasTenant)->where('status', 0)->pluck('id')->toArray();
         //get tenant room equip
-        $tenantRoomEquip = TenantRoomEquip::whereIn('tenant_id',$tenant);
+        $tenantRoomEquip = TenantRoomEquip::whereIn('tenant_id', $tenant);
         //condition order ;
         $line = 172;
-        if($order == 0 ) {
+        if ($order == 0) {
             $tenantRoomEquip->orderByDesc('created_at');
             $line = 175;
         }
         //from to
-        if($form != 0) {
-            $form = date($form) ;
-            $to = date($to) ;
+        if ($form != 0) {
+            // $form = date($form) ;
+            // $to = date($to) ;
             $line = 181;
-            $tenantRoomEquip->whereBetween('created_at' , [$form , $to]);
+            $tenantRoomEquip->whereBetween('created_at', [$form, $to]);
         }
         $tenantRE = $tenantRoomEquip->with('img_details')->with('tenant.room.room_type')->get();
 
         return response()->json([
             'tenantRE' => $tenantRE,
-            'line' => $line ,
-            'statusCode' => 1 ,
+            'line' => $line,
+            'statusCode' => 1,
+        ]);
+    }
+    public function eqCreate(Request $request)
+    {
+        $tenant = Tenant::find($request->tenantId);
+        $eqName = $request->eqName;
+        $eqContent = $request->eqContent;
+        $eqImgNum = $request->eqImg_num;
+
+        $treData = [
+            'name' => $eqName,
+            'content' => $eqContent,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ];
+        DB::transaction(function () use ($tenant, $request, $eqImgNum , $treData) {
+            $tre = $tenant->tenant_room_equips()->create($treData);
+            $this->storeImgDetail('eqImg', $eqImgNum, $tre, $request);
+        });
+        return response()->json([
+            "statusCode" => 1 ,
         ]);
     }
     public function sendNoti($title, $sender_id, $receiver_id, $content, $noti_type_id)
@@ -202,5 +225,24 @@ class TenantRoomEquipController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
         });
+    }
+
+    private function moveFileToImage($file)
+    {
+        $pathfile = 'image';
+        $ran = Str::random(20);
+        $namefile = Carbon::now()->timestamp . $ran . '.' . $file->getClientOriginalExtension();
+        $file->move($pathfile, $namefile);
+        return $namefile;
+    }
+    private function storeImgDetail($pfname, $num, $tenantRoomEquip, $request)
+    {
+        for ($i = 0; $i < $num; $i++) {
+            $img = $this->moveFileToImage($request->file($pfname . $i));
+            $tenantRoomEquip->img_details()->create([
+                'room_type_id' => null,
+                'img' => $img,
+            ]);
+        }
     }
 }

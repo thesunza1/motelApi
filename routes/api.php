@@ -100,7 +100,9 @@ Route::middleware(['auth:sanctum'])->group(
         Route::post('createRoomType', [RoomTypeController::class, 'createRoomType']);
         Route::post('deleteRoomType', [RoomTypeController::class, 'deleteRoomType']);
         //tenant room equip controller
+        Route::post('eqCreate' , [TenantRoomEquipController::class, 'eqCreate']);
         Route::get('getAllTRE/{motelId}/{order?}/{from?}/{to?}',[TenantRoomEquipController::class,'getAllTRE']);
+        Route::post('getAllTRE',[TenantRoomEquipController::class,'getAllTRE']);
         Route::get('getTenantRoomEquips', [TenantRoomEquipController::class, 'getTenantRoomEquips']);
         Route::post('deleteTenantRoomEquip', [TenantRoomEquipController::class, 'deleteTenantRoomEquip']);
         Route::post('createTenantRoomEquips', [TenantRoomEquipController::class, 'createTenantRoomEquips']);
