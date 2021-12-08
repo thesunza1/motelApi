@@ -193,6 +193,45 @@ class NotiController extends Controller
             'statusCode' => 1 ,
         ]);
     }
+
+    public function getRoomInto(Request $request) {
+        $notiId =  $request->notiId;
+        $content  = Noti::find($notiId)->content ;
+        $roomString = substr($content,4, strpos($content,'-', 5) - 4) ;
+        $roomIdList = (array) explode(' ', $roomString);
+        foreach($roomIdList as &$roomId) {
+            $roomId = (int) $roomId;
+        }
+        $room = Room::whereIn('id' , $roomIdList)->where('room_status_id',1)->get();
+        $motel = Room::find($roomIdList[0])->room_type->motel;
+        return response()->json([
+            'statusCode' => 1 ,
+            'roomString' => $roomString,
+            'roomList' => $roomIdList ,
+            'motel' => $motel,
+            'room' => $room,
+        ]);
+    }
+
+    public function changeIntoStatus(Request $request) {
+        $noti = Noti::find($request->notiId) ;
+        $noti->invite_status = $request->inviteStatus;
+        $noti->save() ;
+        return response()->json([
+            'statusCode'  => 1 ,
+        ]);
+    }
+    public function sendReject(Request $request) {
+        $motel = Motel::find($request->motelId);
+        $receiverId = $request->receiverId;
+        $title = 'Trọ '.$motel->name .' Từ chối xin vào trọ của bạn';
+        $content = $request->content;
+
+        NotiController::sendNotiChoose($title,$request->user()->id,$receiverId,$content,4,null,0);
+        return response()->json([
+            'statusCode' => 1 ,
+        ]);
+    }
     public static function sendNotiChoose($title, $senderId, $receiverId, $content, $notiTypeId, $room_id, $status)
     {
         if ($notiTypeId != 3) {
