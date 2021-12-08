@@ -46,7 +46,7 @@ class NotiController extends Controller
             'statusCode' => $statusCode,
         ]);
     }
-
+    //findNoti
     public function findNoti(Request $request) {
         $userId = $request->user()->id ;
         $notiTypeId = $request->notiTypeId ;
@@ -65,6 +65,7 @@ class NotiController extends Controller
         return response()->json($resData);
     }
 
+    //getAllNoti
     public function getAllNoti(Request $request)
     {
         $userId = $request->user()->id;
@@ -85,6 +86,18 @@ class NotiController extends Controller
 
         return response()->json(['notis' => $notiArr]);
     }
+    //get getIntoNoti()
+    public function getIntoNoti(Request $request) {
+        // $motelId = $request->motelId;
+        $userId = $request->user()->id;
+
+        $noti = Noti::where('receiver_id', $userId)->where('noti_type_id' , 5)->orderByDesc('created_at')->get();
+
+        $notiArr = NotiResource::collection($noti->loadMissing('senderUser'));
+
+        return response()->json(['notis' => $notiArr]);
+    }
+
     public function countNoti(Request $request)
     {
         $userId = $request->user()->id;

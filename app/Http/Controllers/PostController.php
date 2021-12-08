@@ -126,7 +126,7 @@ class PostController extends Controller
         $user = $motel->user;
         $senderId = $request->user()->id;
         $receiverId = $user->id;
-        NotiController::sendNotiChoose($title, $senderId, $receiverId, $content, 4, null, 0);
+        NotiController::sendNotiChoose($title, $senderId, $receiverId, $content, 5, null, 0);
         return response()->json([
             'statusCode' => 1,
         ]);

@@ -17,7 +17,7 @@ class NotiResource extends JsonResource
         $senderUser = $this->whenLoaded('senderUser');
         $receiverUser = $this->whenLoaded('receiverUser');
         return [
-            'id' => $this->id ,
+            'id' => $this->id,
             'title' => $this->title ,
             // 'senderUser' => new UserResource($senderUser),
             'sender_user' => new UserResource($senderUser),
@@ -25,6 +25,7 @@ class NotiResource extends JsonResource
             'receiver_user' => new UserResource($receiverUser),
             'content' => $this->content ,
             'status' => $this->status,
+            'invite_status' => $this->invite_status,
             'room_id' => $this->room_id ,
             'noti_type_id' =>$this->noti_type_id ,
             'created_at' => $this->created_at,
