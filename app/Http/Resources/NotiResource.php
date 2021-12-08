@@ -19,8 +19,10 @@ class NotiResource extends JsonResource
         return [
             'id' => $this->id ,
             'title' => $this->title ,
-            'senderUser' => new UserResource($senderUser),
-            'receiverUser' => new UserResource($receiverUser),
+            // 'senderUser' => new UserResource($senderUser),
+            'sender_user' => new UserResource($senderUser),
+            // 'receiverUser' => new UserResource($receiverUser),
+            'receiver_user' => new UserResource($receiverUser),
             'content' => $this->content ,
             'status' => $this->status,
             'room_id' => $this->room_id ,

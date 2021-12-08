@@ -46,6 +46,25 @@ class NotiController extends Controller
             'statusCode' => $statusCode,
         ]);
     }
+
+    public function findNoti(Request $request) {
+        $userId = $request->user()->id ;
+        $notiTypeId = $request->notiTypeId ;
+        $from = $request->from;
+        $to = $request->to;
+        $noti = Noti::where('receiver_id', $userId) ;
+
+        if($notiTypeId != 0) $noti->where('noti_type_id', $notiTypeId);
+        if($from != 0) $noti->whereBetween('created_at' , [$from , $to]);
+        $notiArr= $noti->orderByDesc('created_at')->with('senderUser')->get();
+
+        $resData = [
+            'statusCode' => 1 ,
+            'noti' => $notiArr,
+        ];
+        return response()->json($resData);
+    }
+
     public function getAllNoti(Request $request)
     {
         $userId = $request->user()->id;
