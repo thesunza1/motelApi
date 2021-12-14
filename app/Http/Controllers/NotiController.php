@@ -30,7 +30,7 @@ class NotiController extends Controller
             $motel = $room->room_type->motel;
             $motelName = $motel->name;
             $noti_type_id = 3;
-            $title = 'Mời vào trọ ' . $motelName .'. Phòng ' . $room->name;
+            $title = 'Mời vào trọ ' . $motelName . '. Phòng ' . $room->name;
             $noii = Noti::create([
                 'title' => $title,
                 'receiver_id' => $receiverId,
@@ -47,19 +47,20 @@ class NotiController extends Controller
         ]);
     }
     //findNoti
-    public function findNoti(Request $request) {
-        $userId = $request->user()->id ;
-        $notiTypeId = $request->notiTypeId ;
+    public function findNoti(Request $request)
+    {
+        $userId = $request->user()->id;
+        $notiTypeId = $request->notiTypeId;
         $from = $request->from;
         $to = $request->to;
-        $noti = Noti::where('receiver_id', $userId) ;
+        $noti = Noti::where('receiver_id', $userId);
 
-        if($notiTypeId != 0) $noti->where('noti_type_id', $notiTypeId);
-        if($from != 0) $noti->whereBetween('created_at' , [$from , $to]);
-        $notiArr= $noti->orderByDesc('created_at')->with('senderUser')->get();
+        if ($notiTypeId != 0) $noti->where('noti_type_id', $notiTypeId);
+        if ($from != 0) $noti->whereBetween('created_at', [$from, $to]);
+        $notiArr = $noti->orderByDesc('created_at')->with('senderUser')->get();
 
         $resData = [
-            'statusCode' => 1 ,
+            'statusCode' => 1,
             'noti' => $notiArr,
         ];
         return response()->json($resData);
@@ -87,15 +88,35 @@ class NotiController extends Controller
         return response()->json(['notis' => $notiArr]);
     }
     //get getIntoNoti()
-    public function getIntoNoti(Request $request) {
+    public function getIntoNoti(Request $request)
+    {
         // $motelId = $request->motelId;
         $userId = $request->user()->id;
 
-        $noti = Noti::where('receiver_id', $userId)->where('noti_type_id' , 5)->orderByDesc('created_at')->get();
-
+        $noti = Noti::where('receiver_id', $userId)->where('noti_type_id', 5)->orderByDesc('created_at')->get();
+        foreach ($noti as $n) {
+            if ($n->status == 1) continue;
+            $n->status = 1;
+            $n->save();
+        }
         $notiArr = NotiResource::collection($noti->loadMissing('senderUser'));
 
         return response()->json(['notis' => $notiArr]);
+    }
+    //get count into noti()
+    public function countIntoNoti(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $noti = Noti::where('receiver_id', $userId)->where('noti_type_id', 5)->where('status', 0)->get();
+        $num = -1;
+        if ($noti) {
+            $num = count($noti);
+        }
+        return response()->json([
+            'statusCode' => 1,
+            'num' => $num,
+        ]);
     }
 
     public function countNoti(Request $request)
@@ -117,10 +138,10 @@ class NotiController extends Controller
     {
         $senderId = $request->user()->id;
         $noti = $request->noti;
-        $receiverId = $request->receiver_id ;
+        $receiverId = $request->receiver_id;
         $statusCode = 1;
         try {
-            DB::transaction(function () use ($senderId, $noti , $receiverId) {
+            DB::transaction(function () use ($senderId, $noti, $receiverId) {
                 $send = Noti::insert([
                     'sender_id' => $senderId,
                     'receiver_id' => (int) $receiverId,
@@ -188,48 +209,51 @@ class NotiController extends Controller
             $title .= $motel->name;
         }
 
-        NotiController::sendNotiChoose($title ,$senderId, 3 , $arrContent , 2 , null, 0 );
+        NotiController::sendNotiChoose($title, $senderId, 3, $arrContent, 2, null, 0);
         return response()->json([
-            'statusCode' => 1 ,
+            'statusCode' => 1,
         ]);
     }
 
-    public function getRoomInto(Request $request) {
+    public function getRoomInto(Request $request)
+    {
         $notiId =  $request->notiId;
-        $content  = Noti::find($notiId)->content ;
-        $roomString = substr($content,4, strpos($content,'-', 5) - 4) ;
+        $content  = Noti::find($notiId)->content;
+        $roomString = substr($content, 4, strpos($content, '-', 5) - 4);
         $roomIdList = (array) explode(' ', $roomString);
-        foreach($roomIdList as &$roomId) {
+        foreach ($roomIdList as &$roomId) {
             $roomId = (int) $roomId;
         }
-        $room = Room::whereIn('id' , $roomIdList)->where('room_status_id',1)->get();
+        $room = Room::whereIn('id', $roomIdList)->where('room_status_id', 1)->get();
         $motel = Room::find($roomIdList[0])->room_type->motel;
         return response()->json([
-            'statusCode' => 1 ,
+            'statusCode' => 1,
             'roomString' => $roomString,
-            'roomList' => $roomIdList ,
+            'roomList' => $roomIdList,
             'motel' => $motel,
             'room' => $room,
         ]);
     }
 
-    public function changeIntoStatus(Request $request) {
-        $noti = Noti::find($request->notiId) ;
+    public function changeIntoStatus(Request $request)
+    {
+        $noti = Noti::find($request->notiId);
         $noti->invite_status = $request->inviteStatus;
-        $noti->save() ;
+        $noti->save();
         return response()->json([
-            'statusCode'  => 1 ,
+            'statusCode'  => 1,
         ]);
     }
-    public function sendReject(Request $request) {
+    public function sendReject(Request $request)
+    {
         $motel = Motel::find($request->motelId);
         $receiverId = $request->receiverId;
-        $title = 'Trọ '.$motel->name .' Từ chối xin vào trọ của bạn';
+        $title = 'Trọ ' . $motel->name . ' Từ chối xin vào trọ của bạn';
         $content = $request->content;
 
-        NotiController::sendNotiChoose($title,$request->user()->id,$receiverId,$content,4,null,0);
+        NotiController::sendNotiChoose($title, $request->user()->id, $receiverId, $content, 4, null, 0);
         return response()->json([
-            'statusCode' => 1 ,
+            'statusCode' => 1,
         ]);
     }
     public static function sendNotiChoose($title, $senderId, $receiverId, $content, $notiTypeId, $room_id, $status)

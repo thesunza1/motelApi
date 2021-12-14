@@ -74,7 +74,8 @@ Route::middleware(['auth:sanctum'])->group(
         Route::post('outRoom', [RoomController::class, 'outRoom']);
         Route::post('adminOutRoom', [RoomController::class, 'adminOutRoom']);
         Route::get('getRoom/{roomId}', [RoomController::class, 'getRoom']);
-        //noti coontroller
+        //noticontroller
+        Route::get('countIntoNoti',[NotiController::class,'countIntoNoti']);
         Route::post('sendReject',[NotiController::class, 'sendReject']);
         Route::post('changeIntoStatus',[NotiController::class, 'changeIntoStatus']);
         Route::post('getRoomInto',[NotiController::class, 'getRoomInto']);
