@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\RoomTypeResource;
 use App\Models\RoomType;
 use Carbon\Carbon;
+use Faker\Core\Number;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -100,8 +101,10 @@ class RoomTypeController extends Controller
         ];
         $numRoom = $request->numRoom;
         $img_num = $request->img_num;
+        $latestRoomType = $motel->room_types()->latest('id')->first();
+        $latestRoom = $latestRoomType->rooms()->latest('id')->first();
+        $name = (int)$latestRoom->name;
         $roomType = $motel->room_types()->create($roomTypeData);
-
         $post = $roomType->posts()->create([
             'room_id' => null,
             'post_type_id' => 1 ,
@@ -115,6 +118,7 @@ class RoomTypeController extends Controller
         //create imgdetail
         $pathfile = 'image';
         for ($i = 0; $i < $img_num; $i++) {
+
             $files = $request->file('img' . $i);
             $ran = Str::random(20);
             $namefile = Carbon::now()->timestamp . $ran . '.' . $files->getClientOriginalExtension();
@@ -128,7 +132,7 @@ class RoomTypeController extends Controller
         }
         for ($i = 1; $i <= $numRoom; $i++) {
             $roomType->rooms()->create([
-                'name' => $i,
+                'name' => $i + $name,
                 'room_status_id' => 1,
             ]);
         }

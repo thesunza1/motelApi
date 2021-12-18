@@ -117,12 +117,8 @@ class PostController extends Controller
         $listRoomName = Room::whereIn('id',$listRoomId)->pluck('name')->toArray() ;
         $content .= '<!--'. implode(' ',$listRoomId) . '-->';
         $content .= 'Phòng muốn vào: ' . implode(", ", $listRoomName) . '<br>';
-        $content .= 'Họ tên: ' . $user->name . '<br/>';
-        $content .= 'Điện thoại: ' . $user->phone_number . '<br/>';
-        $content .= 'Nghề: ' . $user->job . '<br/>';
         $motel = Post::find($request->postId)->room_type->motel;
         $title .= ' ' . ucwords($motel->name);
-        // $user = Post::find($request->postId)->room_type->motel->user;
         $user = $motel->user;
         $senderId = $request->user()->id;
         $receiverId = $user->id;
