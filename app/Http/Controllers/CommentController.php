@@ -14,7 +14,7 @@ class CommentController extends Controller
     //
     public function getAllComment(Request $request) {
         $postId = $request->post_id ;
-        $comments = Comment::where('post_id','=',$postId)->paginate(10);
+        $comments = Comment::where('post_id','=',$postId)->with('user')->paginate(10);
         // $commentRes = CommentResource::collection($comments);
 
         return response()->json([
@@ -29,6 +29,7 @@ class CommentController extends Controller
 
         $post->comments()->create([
             'content' => $content,
+            'user_id' => $request->user()->id,
             'created_at' => $nowTime,
             'updated_at' => $nowTime,
         ]);

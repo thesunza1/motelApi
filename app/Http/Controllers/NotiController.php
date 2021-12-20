@@ -167,6 +167,14 @@ class NotiController extends Controller
         $noti->save();
         return response()->json(['statusCode' => 1]);
     }
+
+    public function isReadNoti(Request $request) {
+        Noti::where('receiver_id', $request->user()->id)->where('status' , 0 )->update([
+            'status' => 1 ,
+        ]);
+
+        return response()->json(['statusCode' => 1]);
+    }
     public function sendReport(Request $request)
     {
         $type = $request->type;
