@@ -23,13 +23,13 @@ class RoomController extends Controller
         $id = $request->id;
         $roomStatusId = $request->roomStatusId;
         $room = Room::find($id);
-        $roomType = $room->room_type ;
+        $roomType = $room->room_type;
         if ($roomStatusId == 2) {
             $statusCode = 0;
         } else {
             $room->room_status_id = $roomStatusId;
             $room->save();
-            $numRoom=  PostController::checkPost($roomType->id);
+            $numRoom =  PostController::checkPost($roomType->id);
         };
         return response()->json([
             'statusCode' => $statusCode,
@@ -60,7 +60,7 @@ class RoomController extends Controller
             ]); //user have motel ,
         }
         if ($roomStatus == 1) {
-            DB::transaction(function () use ($room, $userId ,$roomType) {
+            DB::transaction(function () use ($room, $userId, $roomType) {
                 $user = User::find($userId);
                 $tenant = $room->tenants()->create([
                     'created_at' => Carbon::now(),
@@ -76,7 +76,7 @@ class RoomController extends Controller
                 $user->have_room = 1;
                 $user->save();
 
-                PostController::checkPost($roomType->id) ;
+                PostController::checkPost($roomType->id);
             });
             return response()->json([
                 'statusCode' => 1,
@@ -119,40 +119,57 @@ class RoomController extends Controller
                 ]);
             }
         }
-        DB::transaction(function () use ($user, $tenant, $room, $tenantUsers ,$roomType) {
+        DB::transaction(function () use ($user, $tenant, $room, $tenantUsers, $roomType) {
             $numTenantUsers = count($tenantUsers);
-            if ($numTenantUsers == 1) {
+            $user->latest_tenant_user()->update(['infor_share' => 0]);
+            $numTenantUserNon = count($tenantUsers->where('infor_share', 0));
+            if ($numTenantUsers == $numTenantUserNon) {
                 $tenant->status = 1;
                 $tenant->save();
                 $room->room_status_id = 1;
                 $room->save();
-            } else if ($numTenantUsers > 1) {
-                $user->latest_tenant_user()->delete() ;
             }
+            // if ($numTenantUsers == 1) {
+            //     $tenant->status = 1;
+            //     $tenant->save();
+            //     $room->room_status_id = 1;
+            //     $room->save();
+            // } else if ($numTenantUsers > 1) {
+            //     $user->latest_tenant_user()->delete() ;
+            // }
             $user->have_room = 0;
             $user->save();
 
-            PostController::checkPost($roomType->id) ;
+            PostController::checkPost($roomType->id);
         });
         return response()->json([
             'statusCode' => 1
         ]);
     }
-    public function adminOutRoom(Request $request){
+    public function adminOutRoom(Request $request)
+    {
         $user = User::find($request->userId);
         $tenant = $user->latest_tenant_user->tenant;
         $tenantUsers = $tenant->tenant_users;
         $room = $tenant->room;
         DB::transaction(function () use ($user, $tenant, $room, $tenantUsers) {
             $numTenantUsers = count($tenantUsers);
-            if ($numTenantUsers == 1) {
+            $user->latest_tenant_user()->update(['infor_share' => 0]);
+            $numTenantUserNon = count($tenantUsers->where('infor_share', 0));
+            if ($numTenantUsers == $numTenantUserNon) {
                 $tenant->status = 1;
                 $tenant->save();
                 $room->room_status_id = 1;
                 $room->save();
-            } else if ($numTenantUsers > 1) {
-                $user->latest_tenant_user()->delete() ;
             }
+            // if ($numTenantUsers == 1) {
+            //     $tenant->status = 1;
+            //     $tenant->save();
+            //     $room->room_status_id = 1;
+            //     $room->save();
+            // } else if ($numTenantUsers > 1) {
+            //     $user->latest_tenant_user()->delete();
+            // }
             $user->have_room = 0;
             $user->save();
         });
@@ -162,12 +179,13 @@ class RoomController extends Controller
     }
 
     //get: get room infor
-    public function getRoom(Request $request) {
-        $room = Room::find($request->roomId) ;
+    public function getRoom(Request $request)
+    {
+        $room = Room::find($request->roomId);
         $roomRelation = $room->loadMissing('latest_tenant.tenant_users.user')->loadMissing('room_type.motel.user')->loadMissing('latest_tenant.tenant_room_equips.img_details');
-        $roomArr = new RoomResource($roomRelation) ;
+        $roomArr = new RoomResource($roomRelation);
         return response()->json([
-            'statusCode' => 1 ,
+            'statusCode' => 1,
             'room' => $roomArr,
         ]);
     }

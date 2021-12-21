@@ -18,6 +18,7 @@ class TenantUserResource extends JsonResource
         return [
             'id' => $this->id ,
             'user_id' => $this->user_id ,
+            'infor_share' => $this->infor_share,
             'user' => new UserResource($user),
         ];
     }
