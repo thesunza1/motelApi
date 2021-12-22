@@ -119,10 +119,10 @@ class RoomController extends Controller
                 ]);
             }
         }
-        DB::transaction(function () use ($user, $tenant, $room, $tenantUsers, $roomType) {
-            $numTenantUsers = count($tenantUsers);
+        $data = DB::transaction(function () use ($user, $tenant, $room, $tenantUsers, $roomType) {
             $user->latest_tenant_user()->update(['infor_share' => 0]);
-            $numTenantUserNon = count($tenantUsers->where('infor_share', 0));
+            $numTenantUsers = count($tenantUsers);
+            $numTenantUserNon = count($tenantUsers->where('infor_share', 0)) + 1;
             if ($numTenantUsers == $numTenantUserNon) {
                 $tenant->status = 1;
                 $tenant->save();
@@ -141,9 +141,11 @@ class RoomController extends Controller
             $user->save();
 
             PostController::checkPost($roomType->id);
+            return [$numTenantUserNon, $numTenantUsers];
         });
         return response()->json([
-            'statusCode' => 1
+            'statusCode' => 1,
+            'data' => $data,
         ]);
     }
     public function adminOutRoom(Request $request)
