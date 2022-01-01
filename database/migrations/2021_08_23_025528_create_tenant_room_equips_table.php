@@ -19,6 +19,7 @@ class CreateTenantRoomEquipsTable extends Migration
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade')->onUpdate('cascade');
             $table->string('name');
             $table->string('content');
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }

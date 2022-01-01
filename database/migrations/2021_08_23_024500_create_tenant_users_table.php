@@ -20,7 +20,7 @@ class CreateTenantUsersTable extends Migration
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null')->onUpdate('cascade');
             $table->timestamp('in_date')->useCurrent();
-            $table->integer('infor_share')->default(0);
+            $table->integer('infor_share')->default(1);
             $table->timestamps();
         });
     }

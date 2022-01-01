@@ -19,5 +19,6 @@ class NotiTypeSeeder extends Seeder
         NotiType::insert(['name'=>'report']);
         NotiType::insert(['name'=>'invite']);
         NotiType::insert(['name'=>'confirm']);
+        NotiType::insert(['name'=>'into']);
     }
 }
