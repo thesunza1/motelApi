@@ -4,24 +4,24 @@
 ### cách chạy api.
 1. Sao Chép file .env.example sang .env
 2. chạy: 
-'''bash
+```bash
 composer install
-'''
+```
 3. Run trong cmd: 
-'''bash
+```bash
 php artisan key:generate
-'''
+```
 4. chạy tạo cơ sở dữ liệu.
-'''bash
+```bash
 php artisan migrate
-'''
+```
 5. Chạy tạo dữ liệu mẫu.
-'''bash 
+```bash 
 php artisan db:seed
-'''
+```
 6. chạy server localhost.
-'''bash 
+```bash 
 php artisan serve
-'''
+```
 
 
